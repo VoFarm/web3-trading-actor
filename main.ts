@@ -55,7 +55,7 @@ async function startBot() {
                 if (uniswapResponse.price === "NaN") {
                     storage.addConsoleLog(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
                 } else {
-                    actor.callback(response.id, uniswapResponse.price)
+                    await actor.callback(response.id, uniswapResponse.price)
                 }
 
                 var endTime = performance.now()

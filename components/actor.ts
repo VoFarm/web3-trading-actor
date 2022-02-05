@@ -42,28 +42,16 @@ export class TradingActor {
             const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
             let iterationNumber = -1
 
-            this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-                .on('transactionHash', (txHash) => {
-                    iterationNumber = this.storage.addNewIteration({
-                        type: IterationType.TRADE,
-                        status: IterationStatus.IN_PROGRESS,
-                        messages: [],
-                        transactionID: txHash,
-                        nonce: noncePreviousTAOfSender
-                    })
+            this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string).then((receipt) => {
+                iterationNumber = this.storage.addNewIteration({
+                    type: IterationType.PRICE,
+                    status: IterationStatus.IN_PROGRESS,
+                    messages: [],
+                    transactionID: receipt.transactionHash,
+                    nonce: noncePreviousTAOfSender
                 })
-                .on('confirmation', (confirmationNumber, _) => {
-                    if (iterationNumber >= 0 && confirmationNumber >= 7) {
-                        this.storage.updateStatusIteration(iterationNumber, IterationStatus.DONE)
-                        resolve(true)
-                    } else if (iterationNumber >= 0) {
-                        this.storage.updateMessageIteration(iterationNumber, `Confirmation for Contract Swap: ` + confirmationNumber)
-                    }
-                })
-                .on('error', (error) => {
-                    this.storage.updateMessageIteration(iterationNumber, error.message)
-                    reject(error)
-                });
+                resolve(true)
+            })
         })
     }
 
@@ -106,28 +94,16 @@ export class TradingActor {
             const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
             let iterationNumber = -1
 
-            this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-                .on('transactionHash', (txHash) => {
-                    iterationNumber = this.storage.addNewIteration({
-                        type: IterationType.PRICE,
-                        status: IterationStatus.IN_PROGRESS,
-                        messages: [],
-                        transactionID: txHash,
-                        nonce: noncePreviousTAOfSender
-                    })
+            this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string).then((receipt) => {
+                iterationNumber = this.storage.addNewIteration({
+                    type: IterationType.PRICE,
+                    status: IterationStatus.IN_PROGRESS,
+                    messages: [],
+                    transactionID: receipt.transactionHash,
+                    nonce: noncePreviousTAOfSender
                 })
-                .on('confirmation', (confirmationNumber, _) => {
-                    if (iterationNumber >= 0 && confirmationNumber >= 7) {
-                        this.storage.updateStatusIteration(iterationNumber, IterationStatus.DONE)
-                        resolve(true)
-                    } else if (iterationNumber >= 0) {
-                        this.storage.updateMessageIteration(iterationNumber, `Confirmation for Price: ` + confirmationNumber)
-                    }
-                })
-                .on('error', (error) => {
-                    this.storage.updateMessageIteration(iterationNumber, error.message)
-                    reject(error)
-                });
+                resolve(true)
+            })
         })
     }
 }
