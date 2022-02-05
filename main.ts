@@ -67,7 +67,7 @@ async function startBot() {
                 storage.addConsoleLog(`Finished Contract Swap Call | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
                 await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
             } catch (e) {
-                console.log(e)
+                storage.addConsoleLog(e.message)
             }
         }
     }));
