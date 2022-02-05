@@ -44,7 +44,7 @@ export class TradingActor {
 
             this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string).then((receipt) => {
                 iterationNumber = this.storage.addNewIteration({
-                    type: IterationType.PRICE,
+                    type: IterationType.TRADE,
                     status: IterationStatus.IN_PROGRESS,
                     messages: [],
                     transactionID: receipt.transactionHash,
