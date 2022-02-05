@@ -1,41 +1,76 @@
-import {TradingActor} from "./components/web3.ts";
-import {ITradingActor} from "./types/trading-actor.ts";
+import {TradingActor} from "./components/actor.ts";
 import {TradingContractABI, TradingContractAddress} from "./abi/trading.ts";
-import {Immutables, UniswapPoolResponse} from "./types/uniswap.ts";
+import {UniswapPoolResponse} from "./types/uniswap.ts";
 import {PairPricer} from "./components/pairPrices.ts";
 import {UniswapContractABI} from "./abi/uniswap.ts";
+import {Storage} from "./components/storage.ts";
+import {actorNet, loopSleepSeconds, pairPricerNet, user} from "./settings.ts";
+import {opine} from "https://deno.land/x/opine@2.1.1/mod.ts";
+import {opineCors} from "https://deno.land/x/cors/mod.ts";
+
+let performanceTime: number[] = []
 
 async function startBot() {
-    let user: ITradingActor = {
-        publicKey: "",
-        privateKey: ""
-    }
+    const app = opine();
+    app.use(opineCors())
 
-    let actor = new TradingActor("wss://ropsten.infura.io/ws/v3/d9293cfafa6d42888040bb4980c5d8cd", user, TradingContractAddress, TradingContractABI, 3)
-    let pairPricer = new PairPricer("wss://mainnet.infura.io/ws/v3/d9293cfafa6d42888040bb4980c5d8cd", UniswapContractABI)
+    const storage = new Storage()
+    const actor = new TradingActor(actorNet.url, user, TradingContractAddress, TradingContractABI, actorNet.netID, storage)
+    const pairPricer = new PairPricer(pairPricerNet.url, UniswapContractABI)
 
-    while (1) {
-        try {
-            // wait for event
-            let response = await actor.getEventOutput("requestData")
+    app.get("/listening", (req, res) => {
+        res.send(String(actor.listeningEvent));
+    });
 
-            var startTime = performance.now()
+    app.get("/log", (req, res) => {
+        res.json(storage.getConsoleLog());
+    });
 
-            // call uniswap contract
-            let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
-            if (uniswapResponse.price === "NaN") {
-                console.log("ERROR: Switch Case Failed for Uniswap")
-                continue;
+    app.get("/iteration", (req, res) => {
+        res.json(storage.getIteration(req.query.id));
+    });
+
+    app.get("/count", (req, res) => {
+        res.send(String(storage.getCounter() - 1));
+    });
+
+    app.get("/", (req, res) => {
+        res.sendFile(Deno.cwd() + "/main.html");
+    });
+
+    app.listen(3001, () => console.log("http://localhost:3001"));
+
+    const tradingLoop = new Promise((async (resolve, reject) => {
+        while (1) {
+            try {
+                // wait for event
+                const eventPromise = actor.getEventOutput("requestData")
+                let _ = actor.callContractSwap();
+                const response = await eventPromise
+
+                var startTime = performance.now()
+
+                // call uniswap contract
+                let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
+                if (uniswapResponse.price === "NaN") {
+                    storage.addConsoleLog(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
+                } else {
+                    actor.callback(response.id, uniswapResponse.price)
+                }
+
+                var endTime = performance.now()
+
+                if (performanceTime.length >= 25)
+                    performanceTime.shift()
+                performanceTime.push(endTime - startTime)
+                let date = new Date()
+                storage.addConsoleLog(`Finished Contract Swap Call | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
+                await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
+            } catch (e) {
+                console.log(e)
             }
-            console.log(uniswapResponse)
-            actor.callback(response.id, uniswapResponse.price)
-
-            var endTime = performance.now()
-            console.log(`Workflow took ${endTime - startTime} milliseconds`)
-        } catch (e) {
-            console.log(e)
         }
-    }
+    }));
 }
 
 startBot()

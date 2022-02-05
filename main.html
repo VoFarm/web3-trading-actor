@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Node</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .scrollable {
+            max-height: 500px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <h3>Status</h3>
+    <h4 id="listening"></h4>
+    <h4 id="counter"></h4>
+</div>
+
+<div>
+    <h3>Console</h3>
+    <div class="scrollable" id="console"></div>
+</div>
+
+<div>
+    <h3>Iterations</h3>
+    <div class="scrollable" id="iterations"></div>
+</div>
+
+<script>
+    $.get("/listening", (listening) => {
+        $("#listening").text(`Application is ${listening != 'undefined' ? '' : 'not'} listening`)
+    })
+
+    $.get("/log", (listening) => {
+        $("#console").empty()
+        $("#console").append(listening.map((message) => $("<p>").text(message)))
+    })
+
+    $.get("/count", async (count) => {
+        $("#counter").text(`Iteration Counter: ${count}`)
+        $("#iterations").empty()
+        for (let i = 0; i <= count; i++) {
+            await $.get(`/iteration?id=${i}`, (response) => {
+                $("#iterations").append($("<div>").append(
+                    $("<p>").text(`ID: ${response.transactionID}`),
+                    $("<p>").text(`Type: ${response.type == 0 ? "Price Update" : "Trader Call"}`),
+                    $("<p>").text(`Status: ${response.status == 0 ? "In Progress" : "Done"}`),
+                    $("<p>").text(`Messages:`),
+                    $("<div>").append(response.messages.map((message) => $("<p>").text(message))),
+                    $("<hr>")
+                ));
+            })
+        }
+    })
+</script>
+
+</body>
+</html>

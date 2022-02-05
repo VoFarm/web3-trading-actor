@@ -1,4 +1,4 @@
-export const TradingContractAddress = "0x972cC957D1B4cc4F949A230FBa0523d11d819dde"
+export const TradingContractAddress = "0x38bcd5d5599EcC24AEDf17A1221B62B94E93f62D"
 
 export const TradingContractABI = [
     {
@@ -159,19 +159,6 @@ export const TradingContractABI = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "addMockValue",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address",
@@ -236,7 +223,13 @@ export const TradingContractABI = [
         "type": "function"
     },
     {
-        "inputs": [],
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
+            }
+        ],
         "name": "getPrice",
         "outputs": [
             {
@@ -483,6 +476,29 @@ export const TradingContractABI = [
             }
         ],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_receiver",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "payable",
         "type": "function"
     }
 ]

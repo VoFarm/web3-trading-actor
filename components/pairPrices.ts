@@ -2,6 +2,7 @@ import Web3 from "https://deno.land/x/web3@v0.8.5/mod.ts";
 import {Contract} from "https://deno.land/x/web3@v0.8.5/packages/web3-eth-contract/types/index.d.ts";
 import {UniswapDAI_ETH, UniswapUSDC_ETH, UniswapWBTC_ETH} from "../abi/uniswap.ts";
 import {UniswapPoolResponse} from "../types/uniswap.ts";
+import {Storage} from "./storage.ts";
 
 export class PairPricer {
     web3: Web3
@@ -18,7 +19,7 @@ export class PairPricer {
         this.contractDAI_ETH = new this.web3.eth.Contract(contractABI, UniswapDAI_ETH);
     }
 
-    private async callContractSwap(contract: Contract): Promise<UniswapPoolResponse> {
+    async callContractSwap(contract: Contract): Promise<UniswapPoolResponse> {
         const sqrtPriceX96 = await contract.methods.slot0().call()
 
         // @ts-ignore
@@ -46,11 +47,11 @@ export class PairPricer {
 
     async selectTokenPair(pair: string): Promise<UniswapPoolResponse> {
         switch (pair) {
-            case "USDC_ETH":
+            case "USDC/WETH":
                 return this.getUSDC_ETH();
-            case "WBTC_ETH":
+            case "WBTC/WETH":
                 return this.getWBTC_ETH();
-            case "DAI_ETH":
+            case "DAI/WETH":
                 return this.getDAI_ETH();
             default:
                 return {price: "NaN"}
