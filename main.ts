@@ -7,7 +7,7 @@ import {Storage} from "./components/storage.ts";
 import {actorNet, loopSleepSeconds, pairPricerNet, user} from "./settings.ts";
 import {opine} from "https://deno.land/x/opine@2.1.1/mod.ts";
 import {opineCors} from "https://deno.land/x/cors/mod.ts";
-
+localStorage.clear()
 let performanceTime: number[] = []
 
 let storage = new Storage()

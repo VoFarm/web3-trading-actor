@@ -1,4 +1,4 @@
-export const TradingContractAddress = "0x38bcd5d5599EcC24AEDf17A1221B62B94E93f62D"
+export const TradingContractAddress = "0x8B5a7C1230131E61AbEC5Ef87fAd92BBAF4A88F1"
 
 export const TradingContractABI = [
     {
