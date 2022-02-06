@@ -29,7 +29,6 @@ export class TradingActor {
         const gasEstimation = await this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({from: this.contractOwner.publicKey})
 
         let rawTx = {
-            "nonce": noncePreviousTAOfSender,
             "gasLimit": this.web3.utils.toHex(gasEstimation),
             "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
             "from": this.contractOwner.publicKey,
@@ -39,16 +38,8 @@ export class TradingActor {
             "chainId": this.net
         }
         const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
-        let iterationNumber = -1
 
-        const receipt = await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-        this.storage.addNewIteration({
-            type: IterationType.TRADE,
-            status: IterationStatus.IN_PROGRESS,
-            messages: [],
-            transactionID: receipt.transactionHash,
-            nonce: noncePreviousTAOfSender
-        })
+        await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
         return true
     }
 
@@ -63,7 +54,7 @@ export class TradingActor {
                     this.listeningEvent = undefined
                     resolve({id: event.returnValues.id, tknPair: event.returnValues.tknPair})
                 })
-                .on('error', (error: { message: string }, receipt: any) => {
+                .on('error', (error: any, receipt: any) => {
                     this.listeningEvent = undefined
                     resolve(undefined)
                 });
@@ -74,12 +65,10 @@ export class TradingActor {
 
         const data = this.contract.methods.callback(id, value).encodeABI();
 
-        const noncePreviousTAOfSender = await this.web3.eth.getTransactionCount(this.contractOwner.publicKey)
         const medianGasPricePreviousBlocks = Number(await this.web3.eth.getGasPrice())
         const gasEstimation = await this.contract.methods.callback(id, value).estimateGas({from: this.contractOwner.publicKey})
 
         let rawTx = {
-            "nonce": noncePreviousTAOfSender,
             "gasLimit": this.web3.utils.toHex(gasEstimation),
             "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
             "from": this.contractOwner.publicKey,
@@ -89,16 +78,8 @@ export class TradingActor {
             "chainId": this.net
         }
         const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
-        let iterationNumber = -1
 
-        const receipt = await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-        this.storage.addNewIteration({
-            type: IterationType.TRADE,
-            status: IterationStatus.IN_PROGRESS,
-            messages: [],
-            transactionID: receipt.transactionHash,
-            nonce: noncePreviousTAOfSender
-        })
+        await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
         return true
 
     }
