@@ -114,6 +114,7 @@ export class TradingActor {
                     console.log(error)
                     resolve(false)
                 })
+                .catch((err) => resolve(false))
         })
     }
 }
