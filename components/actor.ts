@@ -22,35 +22,42 @@ export class TradingActor {
     }
 
     public async callContractSwap(): Promise<any> {
-        const data = this.contract.methods.executeCurrentInvestmentAdvices().encodeABI();
+        return new Promise(async (resolve, reject) => {
+            const data = this.contract.methods.executeCurrentInvestmentAdvices().encodeABI();
 
-        const noncePreviousTAOfSender = await this.web3.eth.getTransactionCount(this.contractOwner.publicKey)
-        const medianGasPricePreviousBlocks = Number(await this.web3.eth.getGasPrice())
-        const gasEstimation = await this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({from: this.contractOwner.publicKey})
+            const noncePreviousTAOfSender = await this.web3.eth.getTransactionCount(this.contractOwner.publicKey)
+            const medianGasPricePreviousBlocks = Number(await this.web3.eth.getGasPrice())
+            const gasEstimation = await this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({from: this.contractOwner.publicKey})
 
-        let rawTx = {
-            "nonce": noncePreviousTAOfSender,
-            "gasLimit": this.web3.utils.toHex(gasEstimation),
-            "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
-            "from": this.contractOwner.publicKey,
-            "to": this.contract.options.address,
-            "value": "0x00",
-            "data": data,
-            "chainId": this.net
-        }
-        const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
-        let iterationNumber = -1
+            let rawTx = {
+                "nonce": noncePreviousTAOfSender,
+                "gasLimit": this.web3.utils.toHex(gasEstimation),
+                "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
+                "from": this.contractOwner.publicKey,
+                "to": this.contract.options.address,
+                "value": "0x00",
+                "data": data,
+                "chainId": this.net
+            }
+            const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
+            let iterationNumber = -1
 
-        return this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-            .then((receipt) => {
-                iterationNumber = this.storage.addNewIteration({
-                    type: IterationType.TRADE,
-                    status: IterationStatus.IN_PROGRESS,
-                    messages: [],
-                    transactionID: receipt.transactionHash,
-                    nonce: noncePreviousTAOfSender
+            return this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
+                .on('receipt', (receipt) => {
+                    iterationNumber = this.storage.addNewIteration({
+                        type: IterationType.TRADE,
+                        status: IterationStatus.IN_PROGRESS,
+                        messages: [],
+                        transactionID: receipt.transactionHash,
+                        nonce: noncePreviousTAOfSender
+                    })
+                    resolve(true)
                 })
-            })
+                .on('error', (error) => {
+                    console.log(error)
+                    resolve(false)
+                })
+        })
     }
 
 
@@ -93,9 +100,9 @@ export class TradingActor {
             let iterationNumber = -1
 
             this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-                .then((receipt) => {
+                .on('receipt', (receipt) => {
                     iterationNumber = this.storage.addNewIteration({
-                        type: IterationType.PRICE,
+                        type: IterationType.TRADE,
                         status: IterationStatus.IN_PROGRESS,
                         messages: [],
                         transactionID: receipt.transactionHash,
@@ -103,7 +110,8 @@ export class TradingActor {
                     })
                     resolve(true)
                 })
-                .catch((error) => {
+                .on('error', (error) => {
+                    console.log(error)
                     resolve(false)
                 })
         })

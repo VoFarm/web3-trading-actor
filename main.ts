@@ -49,11 +49,17 @@ async function startBot() {
             var startTime = performance.now()
 
             actor.callContractSwap()
-                .then(() => storage.addConsoleLog("Finished Contract Swap"))
+                .then((response) => {
+                    if (response) storage.addConsoleLog("Finished Contract Swap")
+                    else storage.addConsoleLog("ERROR: callContractSwap Failed")
+                })
                 .catch((e) => storage.addConsoleLog(e))
             const response = await eventPromise
 
-            if (!response) continue;
+            if (!response) {
+                storage.addConsoleLog("ERROR: Event Output Failed")
+                continue
+            };
 
             // call uniswap contract
             let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
