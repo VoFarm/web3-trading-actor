@@ -46,15 +46,19 @@ export class PairPricer {
     }
 
     async selectTokenPair(pair: string): Promise<UniswapPoolResponse> {
-        switch (pair) {
-            case "USDC/WETH":
-                return this.getUSDC_ETH();
-            case "WBTC/WETH":
-                return this.getWBTC_ETH();
-            case "DAI/WETH":
-                return this.getDAI_ETH();
-            default:
-                return {price: "NaN"}
+        try {
+            switch (pair) {
+                case "USDC/WETH":
+                    return this.getUSDC_ETH();
+                case "WBTC/WETH":
+                    return this.getWBTC_ETH();
+                case "DAI/WETH":
+                    return this.getDAI_ETH();
+                default:
+                    return {price: "NaN"}
+            }
+        } catch {
+            return {price: "NaN"}
         }
     }
 }

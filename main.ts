@@ -59,10 +59,11 @@ async function startBot() {
             if (!response) {
                 storage.addConsoleLog("ERROR: Event Output Failed")
                 continue
-            };
+            } else storage.addConsoleLog(`Got Event Response: ${response.tknPair}`)
 
             // call uniswap contract
             let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
+            storage.addConsoleLog(`Received Token Pair: ${uniswapResponse.price}`)
             if (uniswapResponse.price === "NaN") {
                 storage.addConsoleLog(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
                 continue
