@@ -7,6 +7,7 @@ import {Storage} from "./components/storage.ts";
 import {actorNet, loopSleepSeconds, pairPricerNet, user} from "./settings.ts";
 import {opine} from "https://deno.land/x/opine@2.1.1/mod.ts";
 import {opineCors} from "https://deno.land/x/cors/mod.ts";
+
 localStorage.clear()
 let performanceTime: number[] = []
 
@@ -44,14 +45,13 @@ function startServer() {
 async function startBot() {
     while (1) {
         try {
+            var startTime = performance.now()
             // wait for event
             const eventPromise = actor.getEventOutput("requestData")
-            var startTime = performance.now()
 
             let actorResponse = await actor.callContractSwap()
 
-            console.log(actorResponse)
-            if (actorResponse == "true") storage.addConsoleLog("Finished Contract Swap")
+            if (actorResponse) storage.addConsoleLog("Finished Contract Swap")
             else storage.addConsoleLog("ERROR: callContractSwap Failed")
 
             const response = await eventPromise
@@ -82,7 +82,7 @@ async function startBot() {
                 performanceTime.shift()
             performanceTime.push(endTime - startTime)
             let date = new Date()
-            storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${((endTime - startTime) / 1000).toFixed(0)} s`)
+            storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${((endTime - startTime) / 1000).toFixed(1)} s`)
             await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
         } catch (e) {
             storage.addConsoleLog(e)
