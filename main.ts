@@ -50,6 +50,9 @@ async function startBot() {
                 actor.callContractSwap().catch((e) => storage.addConsoleLog(e))
                 const response = await eventPromise
 
+                // @ts-ignore
+                if (response.message) continue;
+
                 var startTime = performance.now()
 
                 // call uniswap contract
@@ -76,6 +79,7 @@ async function startBot() {
         resolve(true)
     }));
 }
+
 startServer()
 
 startBot().then(() => startBot()).catch(() => startBot())

@@ -68,7 +68,7 @@ export class TradingActor {
                 })
                 .on('error', (error: any, receipt: any) => {
                     this.listeningEvent = undefined
-                    reject(error.messages)
+                    resolve(error)
                 });
         })
     }
