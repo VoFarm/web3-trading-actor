@@ -10,9 +10,9 @@ import {opineCors} from "https://deno.land/x/cors/mod.ts";
 
 let performanceTime: number[] = []
 
-const storage = new Storage()
-const actor = new TradingActor(actorNet.url, user, TradingContractAddress, TradingContractABI, actorNet.netID, storage)
-const pairPricer = new PairPricer(pairPricerNet.url, UniswapContractABI)
+let storage = new Storage()
+let actor = new TradingActor(actorNet.url, user, TradingContractAddress, TradingContractABI, actorNet.netID, storage)
+let pairPricer = new PairPricer(pairPricerNet.url, UniswapContractABI)
 
 function startServer() {
     const app = opine();
@@ -42,18 +42,21 @@ function startServer() {
 }
 
 async function startBot() {
+    storage = new Storage()
+    actor = new TradingActor(actorNet.url, user, TradingContractAddress, TradingContractABI, actorNet.netID, storage)
+    pairPricer = new PairPricer(pairPricerNet.url, UniswapContractABI)
+
     return new Promise((async (resolve, reject) => {
         for (let amountLoops = 0; amountLoops < 60; amountLoops++) {
             try {
                 // wait for event
                 const eventPromise = actor.getEventOutput("requestData")
-                actor.callContractSwap().catch((e) => storage.addConsoleLog(e))
-                const response = await eventPromise
-
-                // @ts-ignore
-                if (response.message) continue;
-
                 var startTime = performance.now()
+
+                actor.callContractSwap()
+                    .then(() => storage.addConsoleLog("Finished Contract Swap"))
+                    .catch((e) => storage.addConsoleLog(e))
+                const response = await eventPromise
 
                 // call uniswap contract
                 let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
@@ -69,11 +72,11 @@ async function startBot() {
                     performanceTime.shift()
                 performanceTime.push(endTime - startTime)
                 let date = new Date()
-                storage.addConsoleLog(`Finished Contract Swap Call | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
+                storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
                 await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
             } catch (e) {
                 storage.addConsoleLog(e)
-                resolve(e)
+                reject(e)
             }
         }
         resolve(true)
