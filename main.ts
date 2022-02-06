@@ -81,7 +81,7 @@ async function startBot() {
                 performanceTime.shift()
             performanceTime.push(endTime - startTime)
             let date = new Date()
-            storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
+            storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${((endTime - startTime) - 1000).toFixed(0)} s`)
             await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
         } catch (e) {
             storage.addConsoleLog(e)
