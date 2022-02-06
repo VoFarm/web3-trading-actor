@@ -47,7 +47,7 @@ async function startBot() {
             try {
                 // wait for event
                 const eventPromise = actor.getEventOutput("requestData")
-                let _ = actor.callContractSwap();
+                actor.callContractSwap().catch((e) => storage.addConsoleLog(e))
                 const response = await eventPromise
 
                 var startTime = performance.now()
