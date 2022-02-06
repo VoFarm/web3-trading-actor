@@ -60,7 +60,7 @@ export class TradingActor {
     }
 
 
-    public getEventOutput(event: string): Promise<{ id: string, tknPair: string }> {
+    public getEventOutput(event: string): Promise<{ id: string, tknPair: string } | undefined> {
         return new Promise((resolve, reject) => {
             return this.contract.events[event]()
                 .on("connected", (subscriptionId: string) => {
@@ -72,7 +72,7 @@ export class TradingActor {
                 })
                 .on('error', (error: { message: string }, receipt: any) => {
                     this.listeningEvent = undefined
-                    reject(error)
+                    resolve(undefined)
                 });
         })
     }
@@ -110,7 +110,7 @@ export class TradingActor {
                     resolve(true)
                 })
                 .catch((error) => {
-                    reject(error)
+                    resolve(false)
                 })
         })
     }

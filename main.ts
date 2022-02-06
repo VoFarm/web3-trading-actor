@@ -42,48 +42,49 @@ function startServer() {
 }
 
 async function startBot() {
-    storage = new Storage()
-    actor = new TradingActor(actorNet.url, user, TradingContractAddress, TradingContractABI, actorNet.netID, storage)
-    pairPricer = new PairPricer(pairPricerNet.url, UniswapContractABI)
+    while (1) {
+        try {
+            // wait for event
+            const eventPromise = actor.getEventOutput("requestData")
+            var startTime = performance.now()
 
-    return new Promise((async (resolve, reject) => {
-        for (let amountLoops = 0; amountLoops < 60; amountLoops++) {
-            try {
-                // wait for event
-                const eventPromise = actor.getEventOutput("requestData")
-                var startTime = performance.now()
+            actor.callContractSwap()
+                .then(() => storage.addConsoleLog("Finished Contract Swap"))
+                .catch((e) => storage.addConsoleLog(e))
+            const response = await eventPromise
 
-                actor.callContractSwap()
-                    .then(() => storage.addConsoleLog("Finished Contract Swap"))
-                    .catch((e) => storage.addConsoleLog(e))
-                const response = await eventPromise
+            if (!response) continue;
 
-                // call uniswap contract
-                let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
-                if (uniswapResponse.price === "NaN") {
-                    storage.addConsoleLog(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
-                } else {
-                    await actor.callback(response.id, uniswapResponse.price)
+            // call uniswap contract
+            let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
+            if (uniswapResponse.price === "NaN") {
+                storage.addConsoleLog(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
+                continue
+            } else {
+                let callbackResponse = await actor.callback(response.id, uniswapResponse.price)
+                if (callbackResponse) storage.addConsoleLog(`Finished Callback`)
+                else {
+                    storage.addConsoleLog(`ERROR: Callback Failed`)
+                    continue
                 }
-
-                var endTime = performance.now()
-
-                if (performanceTime.length >= 25)
-                    performanceTime.shift()
-                performanceTime.push(endTime - startTime)
-                let date = new Date()
-                storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
-                await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
-            } catch (e) {
-                storage.addConsoleLog(e)
-                reject(e)
             }
+
+            var endTime = performance.now()
+
+            if (performanceTime.length >= 25)
+                performanceTime.shift()
+            performanceTime.push(endTime - startTime)
+            let date = new Date()
+            storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${endTime - startTime} ms`)
+            await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
+        } catch (e) {
+            storage.addConsoleLog(e)
+            await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
         }
-        resolve(true)
-    }));
+    }
 }
 
 startServer()
 
-startBot().then(() => startBot()).catch(() => startBot())
+startBot()
 
