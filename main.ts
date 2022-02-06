@@ -48,12 +48,11 @@ async function startBot() {
             const eventPromise = actor.getEventOutput("requestData")
             var startTime = performance.now()
 
-            actor.callContractSwap()
-                .then((response) => {
-                    if (response) storage.addConsoleLog("Finished Contract Swap")
-                    else storage.addConsoleLog("ERROR: callContractSwap Failed")
-                })
-                .catch((e) => storage.addConsoleLog(e))
+            let actorResponse = await actor.callContractSwap()
+
+            if (actorResponse) storage.addConsoleLog("Finished Contract Swap")
+            else storage.addConsoleLog("ERROR: callContractSwap Failed")
+
             const response = await eventPromise
 
             if (!response) {

@@ -22,42 +22,35 @@ export class TradingActor {
     }
 
     public async callContractSwap(): Promise<any> {
-        return new Promise(async (resolve, reject) => {
-            const data = this.contract.methods.executeCurrentInvestmentAdvices().encodeABI();
 
-            const noncePreviousTAOfSender = await this.web3.eth.getTransactionCount(this.contractOwner.publicKey)
-            const medianGasPricePreviousBlocks = Number(await this.web3.eth.getGasPrice())
-            const gasEstimation = await this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({from: this.contractOwner.publicKey})
+        const data = this.contract.methods.executeCurrentInvestmentAdvices().encodeABI();
 
-            let rawTx = {
-                "nonce": noncePreviousTAOfSender,
-                "gasLimit": this.web3.utils.toHex(gasEstimation),
-                "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
-                "from": this.contractOwner.publicKey,
-                "to": this.contract.options.address,
-                "value": "0x00",
-                "data": data,
-                "chainId": this.net
-            }
-            const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
-            let iterationNumber = -1
+        const noncePreviousTAOfSender = await this.web3.eth.getTransactionCount(this.contractOwner.publicKey)
+        const medianGasPricePreviousBlocks = Number(await this.web3.eth.getGasPrice())
+        const gasEstimation = await this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({from: this.contractOwner.publicKey})
 
-            return this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-                .on('receipt', (receipt) => {
-                    iterationNumber = this.storage.addNewIteration({
-                        type: IterationType.TRADE,
-                        status: IterationStatus.IN_PROGRESS,
-                        messages: [],
-                        transactionID: receipt.transactionHash,
-                        nonce: noncePreviousTAOfSender
-                    })
-                    resolve(true)
-                })
-                .on('error', (error) => {
-                    console.log(error)
-                    resolve(false)
-                })
+        let rawTx = {
+            "nonce": noncePreviousTAOfSender,
+            "gasLimit": this.web3.utils.toHex(gasEstimation),
+            "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
+            "from": this.contractOwner.publicKey,
+            "to": this.contract.options.address,
+            "value": "0x00",
+            "data": data,
+            "chainId": this.net
+        }
+        const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
+        let iterationNumber = -1
+
+        const receipt = await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
+        this.storage.addNewIteration({
+            type: IterationType.TRADE,
+            status: IterationStatus.IN_PROGRESS,
+            messages: [],
+            transactionID: receipt.transactionHash,
+            nonce: noncePreviousTAOfSender
         })
+        return true
     }
 
 
