@@ -1,10 +1,12 @@
-import {Iteration, IterationStatus} from "../types/iteration.ts";
+import {Iteration} from "../types/iteration.ts";
+import {defaultPriority} from "../settings.ts";
 
 export class Storage {
     counter: number = 0
 
     private COUNTER = "counter"
     private CONSOLE = "console"
+    private PRIORITY = "priority"
 
     constructor() {
         this.counter = Number(localStorage.getItem(this.COUNTER)) ?? 0
@@ -13,6 +15,9 @@ export class Storage {
 
         if (!localStorage.getItem(this.CONSOLE))
             localStorage.setItem(this.CONSOLE, JSON.stringify([]))
+
+        if (!localStorage.getItem(this.PRIORITY))
+            localStorage.setItem(this.PRIORITY, JSON.stringify(defaultPriority))
 
         console.log(`Storage Initialized at ${this.counter}`)
     }
@@ -28,6 +33,18 @@ export class Storage {
     private incrementCounter() {
         this.counter += 1
         this.writeObject(this.COUNTER, this.counter)
+    }
+
+    public increasePriority() {
+        this.writeObject(this.PRIORITY, Number(localStorage.getItem(this.PRIORITY)) + 0.05)
+    }
+
+    public resetPriority() {
+        this.writeObject(this.PRIORITY, defaultPriority)
+    }
+
+    public getPriority(): number {
+        return Number(localStorage.getItem(this.PRIORITY))
     }
 
     public getConsoleLog(): string[] {
@@ -49,19 +66,6 @@ export class Storage {
         this.writeObject(this.counter.toString(), newIteration)
         this.incrementCounter()
         return (this.counter - 1)
-    }
-
-    public updateStatusIteration(key: number, status: IterationStatus): boolean {
-        try {
-            let iteration: Iteration = this.getIteration(key.toString())
-            if (!iteration)
-                return false
-            iteration.status = status
-            this.writeObject(key.toString(), iteration)
-            return true
-        } catch {
-            return false
-        }
     }
 
     public updateMessageIteration(key: number, message: string): boolean {

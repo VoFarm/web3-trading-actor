@@ -6,7 +6,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         .scrollable {
-            max-height: 500px;
             overflow: auto;
         }
     </style>
@@ -17,21 +16,21 @@
     <h3>Status</h3>
     <h4 id="listening"></h4>
     <h4 id="counter"></h4>
-</div>
-
-<div>
-    <h3>Console</h3>
-    <div class="scrollable" id="console"></div>
+    <h4 id="priority"></h4>
 </div>
 
 <div>
     <h3>Iterations</h3>
-    <div class="scrollable" id="iterations"></div>
+    <div id="iterations"></div>
 </div>
 
 <script>
     $.get("/listening", (listening) => {
         $("#listening").text(`Application is ${listening != 'undefined' ? '' : 'not'} listening`)
+    })
+
+    $.get("/priority", (priority) => {
+        $("#priority").text(`Priority: ${priority}`)
     })
 
     $.get("/log", (listening) => {
@@ -40,17 +39,21 @@
     })
 
     $.get("/count", async (count) => {
-        $("#counter").text(`Iteration Counter: ${count}`)
+        $("#counter").text(`Iteration Counter: ${Number(count) + 1}`)
         $("#iterations").empty()
-        for (let i = 0; i <= count; i++) {
+        count = Number(count)
+        for (let i = count; i >= ((count - 25) < 0 ? 0 : (count - 25)); i--) {
             await $.get(`/iteration?id=${i}`, (response) => {
-                $("#iterations").append($("<div>").append(
-                    $("<p>").text(`ID: ${response.transactionID}`),
-                    $("<p>").text(`Type: ${response.type == 0 ? "Price Update" : "Trader Call"}`),
-                    $("<p>").text(`Status: ${response.status == 0 ? "In Progress" : "Done"}`),
-                    $("<p>").text(`Messages:`),
-                    $("<div>").append(response.messages.map((message) => $("<p>").text(message))),
-                    $("<hr>")
+                $("#iterations").append($("<div>").css("background", response.success ? "#00800036" : "#ff00001c").append(
+                    $("<hr>"),
+                    $("<h3>").text(`Iteration ${i + 1}`),
+                    $("<p>").text(`TX Price: ${response.txPrice}`),
+                    $("<p>").text(`TX Trade: ${response.txTrade}`),
+                    $("<p>").text(`Traded: ${response.traded}`),
+                    $("<p>").text(`Date: ${response.startDate}`),
+                    $("<p>").text(`Performance: ${response.seconds}s`),
+                    $("<h4>").text(`Messages:`),
+                    $("<div>").append(response.messages.map((message) => $("<p>").text(message)))
                 ));
             })
         }

@@ -13,3 +13,5 @@ export const pairPricerNet = {
 }
 
 export const loopSleepSeconds: number = 60
+
+export const defaultPriority: number = 1.25

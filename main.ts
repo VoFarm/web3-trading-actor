@@ -7,9 +7,10 @@ import {Storage} from "./components/storage.ts";
 import {actorNet, loopSleepSeconds, pairPricerNet, user} from "./settings.ts";
 import {opine} from "https://deno.land/x/opine@2.1.1/mod.ts";
 import {opineCors} from "https://deno.land/x/cors/mod.ts";
+import {NOTMINED, UNDERPRICED} from "./types/errors.ts";
+import {Iteration} from "./types/iteration.ts";
 
 localStorage.clear()
-let performanceTime: number[] = []
 
 let storage = new Storage()
 let actor = new TradingActor(actorNet.url, user, TradingContractAddress, TradingContractABI, actorNet.netID, storage)
@@ -31,6 +32,10 @@ function startServer() {
         res.json(storage.getIteration(req.query.id));
     });
 
+    app.get("/priority", (req, res) => {
+        res.json(storage.getPriority());
+    });
+
     app.get("/count", (req, res) => {
         res.send(String(storage.getCounter() - 1));
     });
@@ -44,50 +49,57 @@ function startServer() {
 
 async function startBot() {
     while (1) {
+        const iteration: Iteration = {
+            messages: [],
+            traded: "",
+            txPrice: "",
+            txTrade: "",
+            startDate: new Date(),
+            seconds: 0,
+            success: false
+        }
+
         try {
-            var startTime = performance.now()
+            const startTime = performance.now()
             // wait for event
-            const eventPromise = actor.getEventOutput("requestData")
+            const requestDataPromise = actor.getEventOutput("requestData")
 
-            let actorResponse = await actor.callContractSwap()
+            let temp = (await actor.callContractSwap())
+            iteration.txTrade = temp.transactionHash
+            iteration.messages.push("Finished Contract Swap")
 
-            if (actorResponse) storage.addConsoleLog("Finished Contract Swap")
-            else storage.addConsoleLog("ERROR: callContractSwap Failed")
-
-            const response = await eventPromise
+            const response = await requestDataPromise
 
             if (!response) {
-                storage.addConsoleLog("ERROR: Event Output Failed")
+                iteration.messages.push("ERROR: Event Output Failed")
                 continue
-            } else storage.addConsoleLog(`Got Event Response: ${response.tknPair}`)
+            } else iteration.messages.push(`Got Event Response: ${response.tknPair}`)
 
             // call uniswap contract
             let uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(response.tknPair)
-            storage.addConsoleLog(`Received Token Pair: ${uniswapResponse.price}`)
+            iteration.messages.push(`Received Token Pair: ${response.tknPair} @ ${uniswapResponse.price}`)
             if (uniswapResponse.price === "NaN") {
-                storage.addConsoleLog(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
+                iteration.messages.push(`ERROR: Switch Case Failed for Uniswap with Pair: ${response.tknPair}`)
                 continue
             } else {
-                let callbackResponse = await actor.callback(response.id, uniswapResponse.price)
-                if (callbackResponse) storage.addConsoleLog(`Finished Callback`)
-                else {
-                    storage.addConsoleLog(`ERROR: Callback Failed`)
-                    continue
-                }
+                iteration.txPrice = (await actor.callback(response.id, uniswapResponse.price)).transactionHash
+                iteration.messages.push(`Finished Callback`)
             }
 
-            var endTime = performance.now()
-
-            if (performanceTime.length >= 25)
-                performanceTime.shift()
-            performanceTime.push(endTime - startTime)
-            let date = new Date()
-            storage.addConsoleLog(`Finished Iteration | Time: ${date.toDateString()} ${date.toTimeString()} | Pair: ${response.tknPair} | Performance: ${((endTime - startTime) / 1000).toFixed(1)} s`)
-            await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
+            const endTime = performance.now();
+            storage.resetPriority()
+            iteration.messages.push(`Finished Iteration | Pair: ${response.tknPair}`)
+            iteration.success = true
+            iteration.traded = await actor.getStatus()
+            iteration.seconds = Number(((endTime - startTime) / 1000).toFixed(1))
         } catch (e) {
-            storage.addConsoleLog(e)
-            await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
+            iteration.messages.push(e.message)
+            if (e.message === NOTMINED || e.message === UNDERPRICED) {
+                storage.increasePriority()
+            }
         }
+        storage.addNewIteration(iteration)
+        await new Promise(resolve => setTimeout(resolve, loopSleepSeconds * 1000));
     }
 }
 

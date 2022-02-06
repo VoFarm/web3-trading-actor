@@ -2,7 +2,7 @@ import Web3 from 'https://deno.land/x/web3@v0.8.5/mod.ts'
 import {ITradingActor} from "../types/trading-actor.ts";
 import {Contract} from 'https://deno.land/x/web3@v0.8.5/packages/web3-eth-contract/types/index.d.ts';
 import {Storage} from "./storage.ts";
-import {IterationStatus, IterationType} from "../types/iteration.ts";
+import {UniswapPoolResponse} from "../types/uniswap.ts";
 
 export class TradingActor {
     web3: Web3
@@ -30,7 +30,7 @@ export class TradingActor {
 
         let rawTx = {
             "gasLimit": this.web3.utils.toHex(gasEstimation),
-            "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
+            "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * this.storage.getPriority()))),
             "from": this.contractOwner.publicKey,
             "to": this.contract.options.address,
             "value": "0x00",
@@ -39,10 +39,12 @@ export class TradingActor {
         }
         const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
 
-        await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-        return true
+        return await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
     }
 
+    public getStatus() {
+        return this.contract.methods._getLastAdvice().call()
+    }
 
     public getEventOutput(event: string): Promise<{ id: string, tknPair: string } | undefined> {
         return new Promise((resolve, reject) => {
@@ -61,7 +63,7 @@ export class TradingActor {
         })
     }
 
-    async callback(id: string, value: string) {
+    async callback(id: string, value: string): Promise<any> {
 
         const data = this.contract.methods.callback(id, value).encodeABI();
 
@@ -70,7 +72,7 @@ export class TradingActor {
 
         let rawTx = {
             "gasLimit": this.web3.utils.toHex(gasEstimation),
-            "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * 1.15))),
+            "gasPrice": this.web3.utils.toHex(parseInt(String(medianGasPricePreviousBlocks * this.storage.getPriority()))),
             "from": this.contractOwner.publicKey,
             "to": this.contract.options.address,
             "value": "0x00",
@@ -79,8 +81,6 @@ export class TradingActor {
         }
         const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey)
 
-        await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
-        return true
-
+        return await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)
     }
 }

@@ -1,4 +1,4 @@
-export const TradingContractAddress = "0x292739731ed5e55CC7845Be1c6e82A49fd428fcD"
+export const TradingContractAddress = "0x488ceA002dc222564c116190B5B9c7735092C497"
 
 export const TradingContractABI = [
     {
@@ -222,6 +222,34 @@ export const TradingContractABI = [
         ],
         "name": "grantRole",
         "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "investmentStrat",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "startTransfer",
+                "type": "bool"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenIN",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenOUT",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
         "stateMutability": "nonpayable",
         "type": "function"
     },
