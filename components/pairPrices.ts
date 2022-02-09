@@ -1,8 +1,7 @@
 import Web3 from "https://deno.land/x/web3@v0.8.5/mod.ts";
 import {Contract} from "https://deno.land/x/web3@v0.8.5/packages/web3-eth-contract/types/index.d.ts";
-import {UniswapDAI_ETH, UniswapUSDC_ETH, UniswapWBTC_ETH} from "../abi/uniswap.ts";
+import {UniswapDAI_ETH, UniswapUSDC_ETH, UniswapUSDC_WETH, UniswapWBTC_ETH} from "../abi/uniswap.ts";
 import {UniswapPoolResponse} from "../types/uniswap.ts";
-import {Storage} from "./storage.ts";
 
 export class PairPricer {
     web3: Web3
@@ -10,6 +9,7 @@ export class PairPricer {
     contractUSDC_ETH: Contract
     contractWBTC_ETH: Contract
     contractDAI_ETH: Contract
+    contractDAI_WETH: Contract
 
     constructor(web3Provider: string, contractABI: Array<any>) {
         // this.web3 = web3
@@ -17,6 +17,7 @@ export class PairPricer {
         this.contractUSDC_ETH = new this.web3.eth.Contract(contractABI, UniswapUSDC_ETH);
         this.contractWBTC_ETH = new this.web3.eth.Contract(contractABI, UniswapWBTC_ETH);
         this.contractDAI_ETH = new this.web3.eth.Contract(contractABI, UniswapDAI_ETH);
+        this.contractDAI_WETH = new this.web3.eth.Contract(contractABI, UniswapUSDC_WETH);
     }
 
     async callContractSwap(contract: Contract): Promise<UniswapPoolResponse> {
@@ -45,15 +46,21 @@ export class PairPricer {
         return this.callContractSwap(this.contractDAI_ETH)
     }
 
+    async getUSDC_WETH(): Promise<UniswapPoolResponse> {
+        return this.callContractSwap(this.contractDAI_ETH)
+    }
+
     async selectTokenPair(pair: string): Promise<UniswapPoolResponse> {
         try {
             switch (pair) {
-                case "USDC/WETH":
+                case "USDC/ETH":
                     return this.getUSDC_ETH();
                 case "WBTC/WETH":
                     return this.getWBTC_ETH();
                 case "DAI/WETH":
                     return this.getDAI_ETH();
+                case "USDC/WETH":
+                    return this.getUSDC_WETH();
                 default:
                     return {price: "NaN"}
             }
