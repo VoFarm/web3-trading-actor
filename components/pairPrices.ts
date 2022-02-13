@@ -1,5 +1,5 @@
-import Web3 from "https://deno.land/x/web3@v0.8.5/mod.ts";
-import {Contract} from "https://deno.land/x/web3@v0.8.5/packages/web3-eth-contract/types/index.d.ts";
+import Web3 from "https://deno.land/x/web3@v0.9.2/mod.ts";
+import {Contract} from "https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts";
 import {UniswapDAI_ETH, UniswapUSDC_ETH, UniswapUSDC_WETH, UniswapWBTC_ETH} from "../abi/uniswap.ts";
 import {UniswapPoolResponse} from "../types/uniswap.ts";
 

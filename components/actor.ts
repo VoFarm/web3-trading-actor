@@ -1,8 +1,7 @@
-import Web3 from 'https://deno.land/x/web3@v0.8.5/mod.ts'
+import Web3 from 'https://deno.land/x/web3@v0.9.2/mod.ts'
 import {ITradingActor} from "../types/trading-actor.ts";
-import {Contract} from 'https://deno.land/x/web3@v0.8.5/packages/web3-eth-contract/types/index.d.ts';
+import {Contract} from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
 import {Storage} from "./storage.ts";
-import {UniswapPoolResponse} from "../types/uniswap.ts";
 
 export class TradingActor {
     web3: Web3
