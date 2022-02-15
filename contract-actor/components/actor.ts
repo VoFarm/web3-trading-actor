@@ -1,6 +1,7 @@
-import { IAccount, INet } from "../../types/web3/web3.ts";
-import { EventData, initWeb3, rawTransactionSend, Web3 } from "./web3.ts";
-import { Contract } from "https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts";
+import { IAccount, INet } from '../../types/web3/web3.ts';
+import { EventData, initWeb3, rawTransactionSend, Web3 } from './web3.ts';
+import { ITransaction } from '../../types/iteration.ts';
+import { Contract } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
 
 export class Actor {
   web3: Web3;
@@ -19,11 +20,7 @@ export class Actor {
     this.contractOwner = contractOwner;
 
     this.web3 = initWeb3(this.netSettings.url);
-    this.contract = new this.web3.eth.Contract(
-      contractABI,
-      contractAddress,
-      {},
-    );
+    this.contract = new this.web3.eth.Contract(contractABI, contractAddress, {});
   }
 
   /**
@@ -31,21 +28,15 @@ export class Actor {
    *
    * @returns txID: Transaction ID of the contract function
    */
-  public async callContractSwap(): Promise<string> {
-    const data = this.contract.methods.executeCurrentInvestmentAdvices()
-      .encodeABI();
+  public async callContractSwap(): Promise<ITransaction> {
+    const data = this.contract.methods.executeCurrentInvestmentAdvices().encodeABI();
 
     // get gasPrice and gasAmount for executing the contract
-    const medianGasPricePreviousBlocks: Promise<string> = this.web3.eth
-      .getGasPrice();
-    const contractGasEstimation: Promise<string> = this.contract.methods
-      .executeCurrentInvestmentAdvices().estimateGas({
-        from: this.contractOwner.publicKey,
-      });
-    const [gasPrice, gasAmount] = await Promise.all([
-      medianGasPricePreviousBlocks,
-      contractGasEstimation,
-    ]);
+    const medianGasPricePreviousBlocks: Promise<string> = this.web3.eth.getGasPrice();
+    const contractGasEstimation: Promise<string> = this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({
+      from: this.contractOwner.publicKey,
+    });
+    const [gasPrice, gasAmount] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation]);
 
     // create raw transaction to execute contract function
     const rawTx = rawTransactionSend(
@@ -58,13 +49,14 @@ export class Actor {
     );
 
     // sign and send transcation
-    const signedTransaction = await this.web3.eth.accounts.signTransaction(
-      rawTx,
-      this.contractOwner.privateKey,
-    );
-    return (await this.web3.eth.sendSignedTransaction(
-      signedTransaction.rawTransaction as string,
-    )).transactionHash;
+    const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey);
+
+    return {
+      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)).transactionHash,
+      descriptor: 'Swap Transaction',
+      gasLimit: Number(gasAmount),
+      gasPrice: Number(gasPrice),
+    };
   }
 
   /**
@@ -82,18 +74,15 @@ export class Actor {
    *
    * @returns txID: Transaction ID of the contract function
    */
-  public async callback(id: string, value: string): Promise<string> {
+  public async callback(id: string, value: string): Promise<ITransaction> {
     const data = this.contract.methods.callback(id, value).encodeABI();
 
     // get gasPrice and gasAmount for executing the contract
-    const medianGasPricePreviousBlocks: Promise<string> = this.web3.eth
-      .getGasPrice();
-    const contractGasEstimation: Promise<string> = this.contract.methods
-      .callback(id, value).estimateGas({ from: this.contractOwner.publicKey });
-    const [gasPrice, gasAmount] = await Promise.all([
-      medianGasPricePreviousBlocks,
-      contractGasEstimation,
-    ]);
+    const medianGasPricePreviousBlocks: Promise<string> = this.web3.eth.getGasPrice();
+    const contractGasEstimation: Promise<string> = this.contract.methods.callback(id, value).estimateGas({
+      from: this.contractOwner.publicKey,
+    });
+    const [gasPrice, gasAmount] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation]);
 
     // create raw transaction to execute contract function
     const rawTx = rawTransactionSend(
@@ -106,13 +95,14 @@ export class Actor {
     );
 
     // sign and send transcation
-    const signedTransaction = await this.web3.eth.accounts.signTransaction(
-      rawTx,
-      this.contractOwner.privateKey,
-    );
-    return (await this.web3.eth.sendSignedTransaction(
-      signedTransaction.rawTransaction as string,
-    )).transactionHash;
+    const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey);
+
+    return {
+      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)).transactionHash,
+      descriptor: 'Price Callback',
+      gasLimit: Number(rawTx.gasLimit),
+      gasPrice: Number(rawTx.gasPrice),
+    };
   }
 
   /**
@@ -120,18 +110,15 @@ export class Actor {
    */
   public listenToDataRequest(): Promise<{ id: string; tknPair: string }> {
     return new Promise((resolve, reject) => {
-      this.contract.events["requestData"]()
-        .on("connected", (subscriptionId: string) => {
+      this.contract.events['requestData']()
+        .on('connected', (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
         })
-        .on("data", (event: EventData) => {
+        .on('data', (event: EventData) => {
           this.listeningEvent = undefined;
-          resolve({
-            id: event.returnValues.id,
-            tknPair: event.returnValues.tknPair,
-          });
+          resolve({ id: event.returnValues.id, tknPair: event.returnValues.tknPair });
         })
-        .on("error", (error: string, _: any) => {
+        .on('error', (error: string, _: any) => {
           this.listeningEvent = undefined;
           reject(error);
         });

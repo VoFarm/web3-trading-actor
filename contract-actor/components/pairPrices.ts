@@ -1,13 +1,8 @@
-import { Contract } from "https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts";
-import {
-  UniswapDAI_ETH,
-  UniswapUSDC_ETH,
-  UniswapUSDC_WETH,
-  UniswapWBTC_ETH,
-} from "../abi/uniswap.ts";
-import { UniswapPoolResponse } from "../../types/contracts/uniswap.ts";
-import { initWeb3, Web3 } from "./web3.ts";
-import { INet } from "../../types/web3/web3.ts";
+import { Contract } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
+import { UniswapDAI_ETH, UniswapUSDC_ETH, UniswapUSDC_WETH, UniswapWBTC_ETH } from '../abi/uniswap.ts';
+import { UniswapPoolResponse } from '../../types/contracts/uniswap.ts';
+import { initWeb3, Web3 } from './web3.ts';
+import { INet } from '../../types/web3/web3.ts';
 
 export class PairPricer {
   web3: Web3;
@@ -20,22 +15,10 @@ export class PairPricer {
   constructor(netSettings: INet, contractABI: Array<any>) {
     this.web3 = initWeb3(netSettings.url);
 
-    this.contractUSDC_ETH = new this.web3.eth.Contract(
-      contractABI,
-      UniswapUSDC_ETH,
-    );
-    this.contractWBTC_ETH = new this.web3.eth.Contract(
-      contractABI,
-      UniswapWBTC_ETH,
-    );
-    this.contractDAI_ETH = new this.web3.eth.Contract(
-      contractABI,
-      UniswapDAI_ETH,
-    );
-    this.contractDAI_WETH = new this.web3.eth.Contract(
-      contractABI,
-      UniswapUSDC_WETH,
-    );
+    this.contractUSDC_ETH = new this.web3.eth.Contract(contractABI, UniswapUSDC_ETH);
+    this.contractWBTC_ETH = new this.web3.eth.Contract(contractABI, UniswapWBTC_ETH);
+    this.contractDAI_ETH = new this.web3.eth.Contract(contractABI, UniswapDAI_ETH);
+    this.contractDAI_WETH = new this.web3.eth.Contract(contractABI, UniswapUSDC_WETH);
   }
 
   /**
@@ -44,9 +27,7 @@ export class PairPricer {
    * @param contract
    * @private
    */
-  private async callContractSwap(
-    contract: Contract,
-  ): Promise<UniswapPoolResponse> {
+  private async callContractSwap(contract: Contract): Promise<UniswapPoolResponse> {
     const sqrtPriceX96 = await contract.methods.slot0().call();
 
     // @ts-ignore
@@ -70,19 +51,19 @@ export class PairPricer {
   public async selectTokenPair(pair: string): Promise<UniswapPoolResponse> {
     try {
       switch (pair) {
-        case "USDC/ETH":
+        case 'USDC/ETH':
           return await this.callContractSwap(this.contractUSDC_ETH);
-        case "WBTC/WETH":
+        case 'WBTC/WETH':
           return await this.callContractSwap(this.contractWBTC_ETH);
-        case "DAI/WETH":
+        case 'DAI/WETH':
           return await this.callContractSwap(this.contractDAI_ETH);
-        case "USDC/WETH":
+        case 'USDC/WETH':
           return await this.callContractSwap(this.contractDAI_ETH);
         default:
-          return { price: "NaN" };
+          return { price: 'NaN' };
       }
     } catch {
-      return { price: "NaN" };
+      return { price: 'NaN' };
     }
   }
 }

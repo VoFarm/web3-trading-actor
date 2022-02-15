@@ -1,17 +1,12 @@
-import { Actor } from "./components/actor.ts";
-import { TradingContractABI, TradingContractAddress } from "./abi/trading.ts";
-import { UniswapPoolResponse } from "../types/contracts/uniswap.ts";
-import { PairPricer } from "./components/pairPrices.ts";
-import { UniswapContractABI } from "./abi/uniswap.ts";
-import {
-  actorNet,
-  loopSleepSeconds,
-  pairPricerNet,
-  user,
-} from "../settings.ts";
-import { NOTMINED, UNDERPRICED } from "../types/errors.ts";
-import { Iteration } from "../types/iteration.ts";
-import { Storage } from "./components/storage.ts";
+import { Actor } from './components/actor.ts';
+import { TradingContractABI, TradingContractAddress } from './abi/trading.ts';
+import { UniswapPoolResponse } from '../types/contracts/uniswap.ts';
+import { PairPricer } from './components/pairPrices.ts';
+import { UniswapContractABI } from './abi/uniswap.ts';
+import { actorNet, loopSleepSeconds, pairPricerNet, user } from '../settings.ts';
+import { NOTMINED, UNDERPRICED } from '../types/errors.ts';
+import { Iteration } from '../types/iteration.ts';
+import { Storage } from './components/storage.ts';
 
 /**
  * initialize and start bot
@@ -56,44 +51,28 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
        */
       const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
-          Storage.addMessageToIteration(
-            iterationID,
-            `Got Event Response: ${tknPair} @ ${id}`,
-          );
+          Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
 
           // call uniswap contract
-          const uniswapResponse: UniswapPoolResponse = await pairPricer
-            .selectTokenPair(tknPair);
-          Storage.addMessageToIteration(
-            iterationID,
-            `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`,
-          );
+          const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
+          Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);
 
           // check if token pair is valid and if the value is plausible
-          if (uniswapResponse.price === "NaN") {
-            Storage.addMessageToIteration(
-              iterationID,
-              `ERROR: Switch Case Failed for Uniswap with Pair: ${tknPair}`,
-            );
+          if (uniswapResponse.price === 'NaN') {
+            Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${tknPair}`);
           } else {
-            Storage.setTxPriceIteration(
-              iterationID,
-              await actor.callback(id, uniswapResponse.price),
-            );
-            Storage.addMessageToIteration(iterationID, "Finished Callback");
+            Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
+            Storage.addMessageToIteration(iterationID, 'Finished Callback');
           }
         });
-      Storage.addMessageToIteration(
-        iterationID,
-        "Start listening to 'requestData' Event",
-      );
+      Storage.addMessageToIteration(iterationID, 'Start listening to \'requestData\' Event');
 
       /*
        * call contract function that triggers the event and trade
        */
-      const contractSwapCall = actor.callContractSwap().then((txTrade) => {
-        Storage.setTxTradeIteration(iterationID, txTrade);
-        Storage.addMessageToIteration(iterationID, "Finished Contract Swap");
+      const contractSwapCall = actor.callContractSwap().then((tx) => {
+        Storage.addTransactionToIteration(iterationID, tx);
+        Storage.addMessageToIteration(iterationID, 'Finished Contract Swap');
       });
 
       /**
@@ -102,22 +81,17 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
       await Promise.all([dataRequestListener, contractSwapCall]);
 
       const endTime = performance.now();
-      Storage.setPerformanceIteration(
-        iterationID,
-        Number(((endTime - startTime) / 1000).toFixed(1)),
-      );
+      Storage.setPerformanceIteration(iterationID, Number(((endTime - startTime) / 1000).toFixed(1)));
 
       Storage.resetPriority();
-      Storage.addMessageToIteration(iterationID, "Finished Iteration");
+      Storage.addMessageToIteration(iterationID, 'Finished Iteration');
       Storage.setSuccessIteration(iterationID, true);
       Storage.setTradedIteration(iterationID, await actor.getStatus());
     } catch (e) {
       handleError(iterationID, e);
     }
     Storage.setInProgressIteration(iterationID, false);
-    await new Promise((resolve) =>
-      setTimeout(resolve, loopSleepSeconds * 1000)
-    );
+    await new Promise((resolve) => setTimeout(resolve, loopSleepSeconds * 1000));
   }
 }
 

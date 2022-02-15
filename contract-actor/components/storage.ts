@@ -1,12 +1,6 @@
-import { Iteration } from "../../types/iteration.ts";
-import { defaultPriority } from "../../settings.ts";
-import {
-  CONSOLECOUNTER,
-  CONSOLEDESCRIPTOR,
-  ITERATIONCOUNTER,
-  ITERATIONDESCRIPTOR,
-  PRIORITY,
-} from "../../types/storage.ts";
+import { Iteration, ITransaction } from '../../types/iteration.ts';
+import { defaultPriority } from '../../settings.ts';
+import { CONSOLECOUNTER, CONSOLEDESCRIPTOR, ITERATIONCOUNTER, ITERATIONDESCRIPTOR, PRIORITY } from '../../types/storage.ts';
 
 export class Storage {
   /**
@@ -47,10 +41,7 @@ export class Storage {
    */
   private static incrementIterationCounter(): number {
     const iterationCounter = this.getIterationCounter() + 1;
-    localStorage.setItem(
-      ITERATIONCOUNTER,
-      `${ITERATIONDESCRIPTOR}${iterationCounter}`,
-    );
+    localStorage.setItem(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}${iterationCounter}`);
     return iterationCounter;
   }
 
@@ -61,10 +52,7 @@ export class Storage {
    */
   private static incrementConsoleCounter(): number {
     const consoleCounter = this.getConsoleCounter() + 1;
-    localStorage.setItem(
-      CONSOLECOUNTER,
-      `${CONSOLEDESCRIPTOR}${consoleCounter}`,
-    );
+    localStorage.setItem(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}${consoleCounter}`);
     return consoleCounter;
   }
 
@@ -80,9 +68,7 @@ export class Storage {
         return null;
       }
 
-      return JSON.parse(
-        localStorage.getItem(`${ITERATIONDESCRIPTOR}${iterationID}`) as string,
-      );
+      return JSON.parse(localStorage.getItem(`${ITERATIONDESCRIPTOR}${iterationID}`) as string);
     } catch {
       // catch if item couldn't be parsed
       return null;
@@ -157,10 +143,7 @@ export class Storage {
   public static consoleLog(message: string): number {
     let date = new Date();
     const consoleLogPosition = this.incrementConsoleCounter();
-    this.writeObject(
-      `${CONSOLEDESCRIPTOR}${consoleLogPosition}`,
-      `${date.toDateString()} ${date.toTimeString()} | ${message}`,
-    );
+    this.writeObject(`${CONSOLEDESCRIPTOR}${consoleLogPosition}`, `${date.toDateString()} ${date.toTimeString()} | ${message}`);
     return consoleLogPosition;
   }
 
@@ -184,18 +167,13 @@ export class Storage {
    * @param iterationID
    * @param message
    */
-  public static addMessageToIteration(
-    iterationID: number,
-    message: string,
-  ): boolean {
+  public static addMessageToIteration(iterationID: number, message: string): boolean {
     try {
       const iteration: Iteration | null = this.getIteration(iterationID);
       if (!iteration) return false;
 
       const date = new Date();
-      iteration.messages.push(
-        `${date.toDateString()} ${date.toTimeString()} | ${message}`,
-      );
+      iteration.messages.push(`${date.toDateString()} ${date.toTimeString()} | ${message}`);
       this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
@@ -204,41 +182,19 @@ export class Storage {
   }
 
   /**
-   * set txTrade in iteration
+   * add new transaction related to the iteration
    *
    * returns bool whether it was successful
    *
    * @param iterationID
    * @param tx
    */
-  public static setTxTradeIteration(iterationID: number, tx: string): boolean {
+  public static addTransactionToIteration(iterationID: number, tx: ITransaction): boolean {
     try {
       const iteration: Iteration | null = this.getIteration(iterationID);
       if (!iteration) return false;
 
-      iteration.txTrade = tx;
-
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * set txTrade in iteration
-   *
-   * returns bool whether it was successful
-   *
-   * @param iterationID
-   * @param tx
-   */
-  public static setTxPriceIteration(iterationID: number, tx: string): boolean {
-    try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
-      if (!iteration) return false;
-
-      iteration.txPrice = tx;
+      iteration.tx.push(tx);
 
       this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
@@ -255,10 +211,7 @@ export class Storage {
    * @param iterationID
    * @param success
    */
-  public static setSuccessIteration(
-    iterationID: number,
-    success: boolean,
-  ): boolean {
+  public static setSuccessIteration(iterationID: number, success: boolean): boolean {
     try {
       const iteration: Iteration | null = this.getIteration(iterationID);
       if (!iteration) return false;
@@ -280,10 +233,7 @@ export class Storage {
    * @param iterationID
    * @param traded
    */
-  public static setTradedIteration(
-    iterationID: number,
-    traded: string,
-  ): boolean {
+  public static setTradedIteration(iterationID: number, traded: string): boolean {
     try {
       const iteration: Iteration | null = this.getIteration(iterationID);
       if (!iteration) return false;
@@ -305,10 +255,7 @@ export class Storage {
    * @param iterationID
    * @param seconds
    */
-  public static setPerformanceIteration(
-    iterationID: number,
-    seconds: number,
-  ): boolean {
+  public static setPerformanceIteration(iterationID: number, seconds: number): boolean {
     try {
       const iteration: Iteration | null = this.getIteration(iterationID);
       if (!iteration) return false;
@@ -330,10 +277,7 @@ export class Storage {
    * @param iterationID
    * @param inProgress
    */
-  public static setInProgressIteration(
-    iterationID: number,
-    inProgress: boolean,
-  ): boolean {
+  public static setInProgressIteration(iterationID: number, inProgress: boolean): boolean {
     try {
       const iteration: Iteration | null = this.getIteration(iterationID);
       if (!iteration) return false;

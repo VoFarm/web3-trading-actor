@@ -1,6 +1,5 @@
 export interface Iteration {
-  txPrice: string;
-  txTrade: string;
+  tx: ITransaction[];
   traded: string;
   messages: string[];
   startDate: Date;
@@ -9,12 +8,18 @@ export interface Iteration {
   inProgress: boolean;
 }
 
+export interface ITransaction {
+  tx: string;
+  descriptor: string;
+  gasPrice: number;
+  gasLimit: number;
+}
+
 export function Iteration(): Iteration {
   return {
     messages: [],
-    traded: "",
-    txPrice: "",
-    txTrade: "",
+    traded: '',
+    tx: [],
     startDate: new Date(),
     seconds: 0,
     success: false,

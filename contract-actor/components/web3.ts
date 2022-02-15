@@ -1,7 +1,7 @@
-import Web3 from "https://deno.land/x/web3@v0.9.2/mod.ts";
-import { EventData } from "https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts";
-import { IAccount, IRawTransaction } from "../../types/web3/web3.ts";
-import { Storage } from "./storage.ts";
+import Web3 from 'https://deno.land/x/web3@v0.9.2/mod.ts';
+import { EventData } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
+import { IAccount, IRawTransaction } from '../../types/web3/web3.ts';
+import { Storage } from './storage.ts';
 
 export { Web3 };
 export type { EventData };
@@ -34,14 +34,14 @@ export function rawTransactionSend(
   chainId: number,
 ): IRawTransaction {
   return {
-    "gasLimit": Web3.utils.toHex(Number(gasEstimation.toFixed(0))),
-    "gasPrice": Web3.utils.toHex(
+    'gasLimit': Web3.utils.toHex(Number(gasEstimation.toFixed(0))),
+    'gasPrice': Web3.utils.toHex(
       Number((gasPrice * Storage.getPriority()).toFixed(0)),
     ),
-    "from": contractOwner.publicKey,
-    "to": contractAddress,
-    "value": "0x00",
-    "data": contractData,
-    "chainId": chainId,
+    'from': contractOwner.publicKey,
+    'to': contractAddress,
+    'value': '0x00',
+    'data': contractData,
+    'chainId': chainId,
   };
 }
