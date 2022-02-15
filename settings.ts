@@ -1,17 +1,18 @@
-import {ITradingActor} from "./types/trading-actor.ts";
+import { IAccount, INet } from "./types/web3/web3.ts";
 
-export const user: ITradingActor = {
-    publicKey: "",
-    privateKey: ""
-}
-export const actorNet = {
-    url: "wss://rinkeby.infura.io/ws/v3/",
-    netID: 4
-}
-export const pairPricerNet = {
-    url: "wss://mainnet.infura.io/ws/v3/"
-}
+export const user: IAccount = {
+  publicKey: "",
+  privateKey: "",
+};
+export const actorNet: INet = {
+  url: "wss://rinkeby.infura.io/ws/v3/",
+  netID: 4,
+};
+export const pairPricerNet: INet = {
+  url: "wss://mainnet.infura.io/ws/v3/",
+  netID: 1,
+};
 
-export const loopSleepSeconds: number = 60
+export const loopSleepSeconds: number = 120;
 
-export const defaultPriority: number = 1.25
+export const defaultPriority: number = 1.15;

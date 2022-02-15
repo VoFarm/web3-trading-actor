@@ -44,7 +44,7 @@
         count = Number(count)
         for (let i = count; i >= ((count - 25) < 0 ? 0 : (count - 25)); i--) {
             await $.get(`/iteration?id=${i}`, (response) => {
-                $("#iterations").append($("<div>").css("background", response.success ? "#00800036" : "#ff00001c").append(
+                $("#iterations").append($("<div>").css("background", response.success ? "#00800036" : response.inProgress ? "rgba(104,104,104,0.11)" : "#ff00001c").append(
                     $("<hr>"),
                     $("<h3>").text(`Iteration ${i + 1}`),
                     $("<p>").text(`TX Price: ${response.txPrice}`),
