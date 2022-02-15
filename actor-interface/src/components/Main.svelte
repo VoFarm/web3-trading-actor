@@ -16,7 +16,7 @@
   </div>
   <Grid id="titleGrid" style="margin: 12px auto;">
     <Row padding="30px">
-      <Column style="outline: 1px solid">
+      <Column>
         <Link href="https://github.com/distributed-ledger-technology">
           <div>
             <Folder24/>
@@ -26,7 +26,7 @@
       </Column>
     </Row>
     <Row padding="30px">
-      <Column style="outline: 1px solid">
+      <Column>
         <Link href="https://github.com/distributed-ledger-technology">
           <div>
             <Document24/>
@@ -36,7 +36,7 @@
       </Column>
     </Row>
     <Row padding="30px">
-      <Column style="outline: 1px solid">
+      <Column>
         <Link href="https://github.com/distributed-ledger-technology">
           <div>
             <Chat24/>
