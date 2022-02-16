@@ -42,4 +42,8 @@
         padding: 0 !important;
         margin: 0 !important;
     }
+
+    :global(.bx--structured-list) {
+        margin: 0 !important;
+    }
 </style>

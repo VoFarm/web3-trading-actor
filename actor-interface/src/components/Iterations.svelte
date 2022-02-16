@@ -77,7 +77,7 @@
 {#if iterations}
   <Accordion align="start">
     {#each iterations as iteration}
-      <AccordionItem style="margin: 0 auto; text-align-last: center; max-width: 1280px;">
+      <AccordionItem style="margin: 0 auto; text-align-last: center; max-width: 1440px;">
         <svelte:fragment slot="title">
           <h5 class="fragment">Iteration {counter - iterations.indexOf(iteration)}</h5>
           <div class="fragment">
@@ -126,7 +126,7 @@
             </StructuredList>
           {/if}
 
-          <h3>Logs</h3>
+          <h3 style="margin: 12px 0">Logs</h3>
           <StructuredList>
             <StructuredListBody>
               {#each iteration.messages as message}
