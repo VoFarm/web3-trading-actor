@@ -34,13 +34,13 @@ jobs:
         run: deno bundle main.ts main.bundled.ts 
 
       - name: Compile main.bundled.ts 
-        run: deno compile --allow-net --allow-read --output trading-actor --no-check main.bundled.ts
+        run: deno compile --compat --allow-net --allow-read --output main --no-check main.bundled.ts
+        
+      - name: Zip Resources to One File
+        run: zip -r trading-actor.zip main settings.ts dist
         
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: '1.${{ github.run_id }}'
-          files: |
-            trading-actor
-            settings.ts
-            dist
+          files: trading-actor.zip
