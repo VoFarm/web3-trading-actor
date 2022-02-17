@@ -24,9 +24,11 @@ jobs:
 
       - name: Verify formatting
         run: deno fmt --check --config ../deno.conf.json
+        working-directory: ${{env.working-directory}}
 
       - name: Run linter
         run: deno lint --config ../deno.conf.json
+        working-directory: ${{env.working-directory}}
   
   svelte-code-checker:
     runs-on: ubuntu-latest
@@ -47,3 +49,4 @@ jobs:
       
       - name: Check Svelte Code
         run: svelte-check
+        working-directory: ${{env.working-directory}}
