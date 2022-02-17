@@ -7,9 +7,9 @@ export function main() {
   const app = opine();
   const __dirname = dirname(import.meta.url);
   app.use(opineCors());
-  app.use(serveStatic(join(__dirname, 'dist')));
+  app.use(serveStatic(join(__dirname, '../dist')));
 
-  app.use('/', serveStatic(join(__dirname, 'dist')));
+  app.use('/', serveStatic(join(__dirname, '../dist')));
 
   app.get('/log', (req, res) => {
     res.json(Storage.getConsoleLog(req.query.id));

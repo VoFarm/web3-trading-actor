@@ -2,6 +2,7 @@ import { IAccount, INet } from '../../types/web3/web3.ts';
 import { EventData, initWeb3, rawTransactionSend, Web3 } from './web3.ts';
 import { ITransaction } from '../../types/iteration.ts';
 import { Contract } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
+import { AbiItem } from 'https://deno.land/x/web3@v0.9.2/packages/web3-utils/types/index.d.ts';
 
 export class Actor {
   web3: Web3;
@@ -14,7 +15,7 @@ export class Actor {
     netSettings: INet,
     contractOwner: IAccount,
     contractAddress: string,
-    contractABI: Array<any>,
+    contractABI: Array<AbiItem>,
   ) {
     this.netSettings = netSettings;
     this.contractOwner = contractOwner;
@@ -118,7 +119,7 @@ export class Actor {
           this.listeningEvent = undefined;
           resolve({ id: event.returnValues.id, tknPair: event.returnValues.tknPair });
         })
-        .on('error', (error: string, _: any) => {
+        .on('error', (error: string, _: string) => {
           this.listeningEvent = undefined;
           reject(error);
         });

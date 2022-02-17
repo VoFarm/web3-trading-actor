@@ -30,7 +30,7 @@ export class Storage {
    * @param input
    * @private
    */
-  private static writeObject(key: string, input: object | number | string) {
+  private static writeObject(key: string, input: Record<string, unknown> | number | string) {
     localStorage.setItem(key, JSON.stringify(input));
   }
 
@@ -141,7 +141,7 @@ export class Storage {
    * @param message
    */
   public static consoleLog(message: string): number {
-    let date = new Date();
+    const date = new Date();
     const consoleLogPosition = this.incrementConsoleCounter();
     this.writeObject(`${CONSOLEDESCRIPTOR}${consoleLogPosition}`, `${date.toDateString()} ${date.toTimeString()} | ${message}`);
     return consoleLogPosition;

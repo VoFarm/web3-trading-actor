@@ -3,6 +3,7 @@ import { UniswapDAI_ETH, UniswapUSDC_ETH, UniswapUSDC_WETH, UniswapWBTC_ETH } fr
 import { UniswapPoolResponse } from '../../types/contracts/uniswap.ts';
 import { initWeb3, Web3 } from './web3.ts';
 import { INet } from '../../types/web3/web3.ts';
+import { AbiItem } from 'https://deno.land/x/web3@v0.9.2/packages/web3-utils/types/index.d.ts';
 
 export class PairPricer {
   web3: Web3;
@@ -12,7 +13,7 @@ export class PairPricer {
   contractDAI_ETH: Contract;
   contractDAI_WETH: Contract;
 
-  constructor(netSettings: INet, contractABI: Array<any>) {
+  constructor(netSettings: INet, contractABI: Array<AbiItem>) {
     this.web3 = initWeb3(netSettings.url);
 
     this.contractUSDC_ETH = new this.web3.eth.Contract(contractABI, UniswapUSDC_ETH);
@@ -30,13 +31,9 @@ export class PairPricer {
   private async callContractSwap(contract: Contract): Promise<UniswapPoolResponse> {
     const sqrtPriceX96 = await contract.methods.slot0().call();
 
-    // @ts-ignore
-    const price = new this.web3.utils.BN(`${sqrtPriceX96[0]}`)
-      // @ts-ignore
+    const price = this.web3.utils.toBN(`${sqrtPriceX96[0]}`)
       .pow(this.web3.utils.toBN(2))
-      // @ts-ignore
       .mul(this.web3.utils.toBN(10 ** 18))
-      // @ts-ignore
       .div(this.web3.utils.toBN(2).pow(Web3.utils.toBN(192)));
     return { price: price.toString() };
   }

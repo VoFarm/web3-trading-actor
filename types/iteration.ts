@@ -1,4 +1,4 @@
-export interface Iteration {
+export interface Iteration extends Record<string, unknown> {
   tx: ITransaction[];
   traded: string;
   messages: string[];

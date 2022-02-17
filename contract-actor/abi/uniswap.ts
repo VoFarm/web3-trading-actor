@@ -1,9 +1,11 @@
+import { AbiItem } from 'https://deno.land/x/web3@v0.9.2/packages/web3-utils/types/index.d.ts';
+
 export const UniswapUSDC_ETH = '0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8';
 export const UniswapUSDC_WETH = '0xE592427A0AEce92De3Edee1F18E0157C05861564';
 export const UniswapWBTC_ETH = '0xCBCdF9626bC03E24f779434178A73a0B4bad62eD';
 export const UniswapDAI_ETH = '0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8';
 
-export const UniswapContractABI = [{
+export const UniswapContractABI: Array<AbiItem> = [{
   'inputs': [],
   'stateMutability': 'nonpayable',
   'type': 'constructor',
