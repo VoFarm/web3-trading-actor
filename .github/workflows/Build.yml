@@ -42,5 +42,5 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: '$((github.run_number/20)).$((github.run_number % 20))'
+          tag_name: '${{$((github.run_number/20)).$((github.run_number % 20))}}'
           files: trading-actor.zip
