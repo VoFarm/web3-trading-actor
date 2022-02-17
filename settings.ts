@@ -6,13 +6,13 @@ export const user: IAccount = {
 };
 export const actorNet: INet = {
   url: Deno.env.get('actorUrl') ?? '',
-  netID: Number(Deno.env.get('actorNetID')) ?? 1,
+  netID: Number(Deno.env.get('actorNetID')?? 1),
 };
 export const pairPricerNet: INet = {
   url: Deno.env.get('pairPricerUrl') ?? '',
-  netID: Number(Deno.env.get('pairPricerNetID')) ?? 1,
+  netID: Number(Deno.env.get('pairPricerNetID') ?? 1),
 };
 
-export const loopSleepSeconds: number = Number(Deno.env.get('loopSleepSeconds')) ?? 120;
+export const loopSleepSeconds: number = Number(Deno.env.get('sleepSeconds') ?? 120);
 
-export const defaultPriority: number = Number(Deno.env.get('defaultPriority')) ?? 1;
+export const defaultPriority: number = Number(Deno.env.get('defaultPriority') ?? 1);
