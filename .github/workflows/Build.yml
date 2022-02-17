@@ -27,7 +27,7 @@ jobs:
         working-directory: ${{env.svelte-dir}}
         
       - name: Move dist to Root
-        run: mv dist ../
+        run: cp -R dist ../
         working-directory: ${{env.svelte-dir}}
 
       - name: Bundle Project to One File
