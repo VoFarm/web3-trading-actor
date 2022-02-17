@@ -37,7 +37,7 @@ jobs:
         run: deno compile --allow-net --allow-read --allow-write --output main --no-check main.bundled.ts
         
       - name: Zip Resources to One File
-        run: zip -r trading-actor.zip main settings.ts dist
+        run: zip -r trading-actor.zip main .env.example dist
         
       - name: Release
         uses: softprops/action-gh-release@v1
