@@ -11,11 +11,10 @@ jobs:
       svelte-dir: ./actor-interface
 
     steps:
-      - name: Setup repo
+      - name: Setup Repo
         uses: actions/checkout@v2
 
       - name: Setup Deno
-        # uses: denoland/setup-deno@v1
         uses: denoland/setup-deno@004814556e37c54a2f6e31384c9e18e983317366
         with:
           deno-version: v1.x
@@ -35,12 +34,13 @@ jobs:
         run: deno bundle main.ts main.bundled.ts 
 
       - name: Compile main.bundled.ts 
-        run: deno compile --allow-net --allow-read --output trading-actor --no-check main.bundled.ts
+        run: deno compile --compat --unstable --allow-net --allow-read --output main --no-check main.bundled.ts
+        
+      - name: Zip Resources to One File
+        run: zip -r trading-actor.zip main settings.ts dist
         
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            trading-actor
-            settings.ts
-            dist
+          tag_name: '1.${{ github.run_id }}'
+          files: trading-actor.zip
