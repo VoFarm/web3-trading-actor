@@ -25,10 +25,6 @@ jobs:
       - name: Generate dist with Snel
         run: snel build
         working-directory: ${{env.svelte-dir}}
-        
-      - name: Move dist to Root
-        run: cp -R dist ../
-        working-directory: ${{env.svelte-dir}}
 
       - name: Bundle Project to One File
         run: deno bundle main.ts main.bundled.ts 
@@ -37,7 +33,7 @@ jobs:
         run: deno compile --allow-net --allow-read --allow-write --allow-env --output main --no-check main.bundled.ts
         
       - name: Zip Resources to One File
-        run: zip -r trading-actor.zip main .env.example dist
+        run: zip -r trading-actor.zip main .env.example
         
       - name: Release
         uses: softprops/action-gh-release@v1
