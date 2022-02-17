@@ -1,12 +1,12 @@
 import { Iteration, ITransaction } from '../../types/iteration.ts';
 import { defaultPriority } from '../../settings.ts';
 import { CONSOLECOUNTER, CONSOLEDESCRIPTOR, ITERATIONCOUNTER, ITERATIONDESCRIPTOR, PRIORITY } from '../../types/storage.ts';
-import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts'
+import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts';
 
 const store = new Store({
   name: 'storage.json',
-  path: './'
-})
+  path: './',
+});
 
 export class Storage {
   /**
@@ -17,12 +17,12 @@ export class Storage {
   public static async initializeStorage() {
     // set counter for the console log
     if (!await store.get(CONSOLECOUNTER)) {
-      await store.set(CONSOLECOUNTER, `${ CONSOLEDESCRIPTOR }-1`);
+      await store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}-1`);
     }
 
     // set counter for the iteration
     if (!await store.get(ITERATIONCOUNTER)) {
-      await store.set(ITERATIONCOUNTER, `${ ITERATIONDESCRIPTOR }-1`);
+      await store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}-1`);
     }
 
     // always reset priority to default value after initialization
@@ -47,7 +47,7 @@ export class Storage {
    */
   private static async incrementIterationCounter(): Promise<number> {
     const iterationCounter = (await this.getIterationCounter()) + 1;
-    await store.set(ITERATIONCOUNTER, `${ ITERATIONDESCRIPTOR }${ iterationCounter }`);
+    await store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}${iterationCounter}`);
     return iterationCounter;
   }
 
@@ -58,7 +58,7 @@ export class Storage {
    */
   private static async incrementConsoleCounter(): Promise<number> {
     const consoleCounter = (await this.getConsoleCounter()) + 1;
-    await store.set(CONSOLECOUNTER, `${ CONSOLEDESCRIPTOR }${ consoleCounter }`);
+    await store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}${consoleCounter}`);
     return consoleCounter;
   }
 
@@ -74,7 +74,7 @@ export class Storage {
         return null;
       }
 
-      return JSON.parse(await store.get(`${ ITERATIONDESCRIPTOR }${ iterationID }`) as string);
+      return JSON.parse(await store.get(`${ITERATIONDESCRIPTOR}${iterationID}`) as string);
     } catch {
       // catch if item couldn't be parsed
       return null;
@@ -93,7 +93,7 @@ export class Storage {
         return null;
       }
 
-      return await store.get(`${ CONSOLEDESCRIPTOR }${ consoleLogID }`);
+      return await store.get(`${CONSOLEDESCRIPTOR}${consoleLogID}`);
     } catch {
       return null;
     }
@@ -149,7 +149,7 @@ export class Storage {
   public static async consoleLog(message: string): Promise<number> {
     const date = new Date();
     const consoleLogPosition = await this.incrementConsoleCounter();
-    this.writeObject(`${ CONSOLEDESCRIPTOR }${ consoleLogPosition }`, `${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
+    this.writeObject(`${CONSOLEDESCRIPTOR}${consoleLogPosition}`, `${date.toDateString()} ${date.toTimeString()} | ${message}`);
     return consoleLogPosition;
   }
 
@@ -161,7 +161,7 @@ export class Storage {
    */
   public static async newIteration(iteration: Iteration): Promise<number> {
     const iterationPosition = await this.incrementIterationCounter();
-    this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationPosition }`, iteration);
+    this.writeObject(`${ITERATIONDESCRIPTOR}${iterationPosition}`, iteration);
     return iterationPosition;
   }
 
@@ -179,8 +179,8 @@ export class Storage {
       if (!iteration) return false;
 
       const date = new Date();
-      iteration.messages.push(`${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
-      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      iteration.messages.push(`${date.toDateString()} ${date.toTimeString()} | ${message}`);
+      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -202,7 +202,7 @@ export class Storage {
 
       iteration.tx.push(tx);
 
-      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -224,7 +224,7 @@ export class Storage {
 
       iteration.success = success;
 
-      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -246,7 +246,7 @@ export class Storage {
 
       iteration.traded = traded;
 
-      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -268,7 +268,7 @@ export class Storage {
 
       iteration.seconds = seconds;
 
-      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -290,7 +290,7 @@ export class Storage {
 
       iteration.inProgress = inProgress;
 
-      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
