@@ -1,4 +1,4 @@
-name: Deno
+name: Code Quality
 
 on:
   push:
@@ -9,8 +9,6 @@ on:
 jobs:
   bot-code-checker:
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./contract-actor
 
     steps:
       - name: Setup repo
@@ -22,26 +20,21 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Verify formatting
-        run: deno fmt --check --config ../deno.conf.json
-        working-directory: ${{env.working-directory}}
-
-      - name: Run linter
-        run: deno lint --config ../deno.conf.json
-        working-directory: ${{env.working-directory}}
+      - name: Verify Formatting
+        run: deno fmt --log-level info --config ./deno.conf.json
         
-      - name: Commit Formatting
-        run: deno lint --config ../deno.conf.json
-        working-directory: ${{env.working-directory}}
+      - name: Run Formatting
+        run: deno lint --log-level info --config ./deno.conf.json
         
-      - uses: EndBug/add-and-commit@v8
+      - name: Commit Code Formatting
+        uses: EndBug/add-and-commit@v8
         with:
           message: 'Formatted and Linted Deno Project'
     
   svelte-code-checker:
     runs-on: ubuntu-latest
     env:
-      working-directory: ./actor-interface
+      svelte-dir: ./contract-actor
 
     steps:
       - name: Setup repo
@@ -57,4 +50,4 @@ jobs:
       
       - name: Check Svelte Code
         run: svelte-check
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{env.svelte-dir}}
