@@ -1,4 +1,5 @@
 import { IAccount, INet } from './types/web3/web3.ts';
+import "https://deno.land/x/dotenv/load.ts";
 
 export const user: IAccount = {
   publicKey: Deno.env.get('publicAddress') ?? '',
