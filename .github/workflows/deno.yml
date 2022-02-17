@@ -29,7 +29,15 @@ jobs:
       - name: Run linter
         run: deno lint --config ../deno.conf.json
         working-directory: ${{env.working-directory}}
-  
+        
+      - name: Commit Formatting
+        run: deno lint --config ../deno.conf.json
+        working-directory: ${{env.working-directory}}
+        
+      - uses: EndBug/add-and-commit@v8
+        with:
+          message: 'Formatted and Linted Deno Project'
+    
   svelte-code-checker:
     runs-on: ubuntu-latest
     env:
