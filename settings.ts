@@ -15,4 +15,4 @@ export const pairPricerNet: INet = {
 
 export const loopSleepSeconds: number = 120;
 
-export const defaultPriority: number = 1.15;
+export const defaultPriority: number = 1.10;
