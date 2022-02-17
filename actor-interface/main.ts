@@ -1,5 +1,5 @@
 import { opine, serveStatic } from 'https://raw.githubusercontent.com/ntrotner/opine/main/mod.ts';
-import { dirname, join } from 'https://raw.githubusercontent.com/ntrotner/opine/main/deps.ts';
+import { dirname } from 'https://raw.githubusercontent.com/ntrotner/opine/main/deps.ts';
 import { opineCors } from 'https://deno.land/x/cors/mod.ts';
 import { Storage } from '../contract-actor/components/storage.ts';
 
