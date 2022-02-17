@@ -25,18 +25,18 @@ export function initWeb3(providerURL: string): Web3 {
  * @param contractData
  * @param chainId
  */
-export function rawTransactionSend(
+export async function rawTransactionSend(
   contractOwner: IAccount,
   gasEstimation: number,
   gasPrice: number,
   contractAddress: string,
   contractData: string,
   chainId: number,
-): IRawTransaction {
+): Promise<IRawTransaction> {
   return {
     'gasLimit': Web3.utils.toHex(Number(gasEstimation.toFixed(0))),
     'gasPrice': Web3.utils.toHex(
-      Number((gasPrice * Storage.getPriority()).toFixed(0)),
+      Number((gasPrice * await Storage.getPriority()).toFixed(0)),
     ),
     'from': contractOwner.publicKey,
     'to': contractAddress,

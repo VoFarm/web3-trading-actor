@@ -1,6 +1,12 @@
 import { Iteration, ITransaction } from '../../types/iteration.ts';
 import { defaultPriority } from '../../settings.ts';
 import { CONSOLECOUNTER, CONSOLEDESCRIPTOR, ITERATIONCOUNTER, ITERATIONDESCRIPTOR, PRIORITY } from '../../types/storage.ts';
+import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts'
+
+const store = new Store({
+  name: 'storage.json',
+  path: './'
+})
 
 export class Storage {
   /**
@@ -8,19 +14,19 @@ export class Storage {
    *
    * @private
    */
-  public static initializeStorage() {
+  public static async initializeStorage() {
     // set counter for the console log
-    if (!localStorage.getItem(CONSOLECOUNTER)) {
-      localStorage.setItem(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}-1`);
+    if (!await store.get(CONSOLECOUNTER)) {
+      await store.set(CONSOLECOUNTER, `${ CONSOLEDESCRIPTOR }-1`);
     }
 
     // set counter for the iteration
-    if (!localStorage.getItem(ITERATIONCOUNTER)) {
-      localStorage.setItem(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}-1`);
+    if (!await store.get(ITERATIONCOUNTER)) {
+      await store.set(ITERATIONCOUNTER, `${ ITERATIONDESCRIPTOR }-1`);
     }
 
     // always reset priority to default value after initialization
-    localStorage.setItem(PRIORITY, JSON.stringify(defaultPriority));
+    await store.set(PRIORITY, JSON.stringify(defaultPriority));
   }
 
   /**
@@ -30,8 +36,8 @@ export class Storage {
    * @param input
    * @private
    */
-  private static writeObject(key: string, input: Record<string, unknown> | number | string) {
-    localStorage.setItem(key, JSON.stringify(input));
+  private static async writeObject(key: string, input: Record<string, unknown> | number | string) {
+    await store.set(key, JSON.stringify(input));
   }
 
   /**
@@ -39,9 +45,9 @@ export class Storage {
    *
    * @private
    */
-  private static incrementIterationCounter(): number {
-    const iterationCounter = this.getIterationCounter() + 1;
-    localStorage.setItem(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}${iterationCounter}`);
+  private static async incrementIterationCounter(): Promise<number> {
+    const iterationCounter = (await this.getIterationCounter()) + 1;
+    await store.set(ITERATIONCOUNTER, `${ ITERATIONDESCRIPTOR }${ iterationCounter }`);
     return iterationCounter;
   }
 
@@ -50,9 +56,9 @@ export class Storage {
    *
    * @private
    */
-  private static incrementConsoleCounter(): number {
-    const consoleCounter = this.getConsoleCounter() + 1;
-    localStorage.setItem(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}${consoleCounter}`);
+  private static async incrementConsoleCounter(): Promise<number> {
+    const consoleCounter = (await this.getConsoleCounter()) + 1;
+    await store.set(CONSOLECOUNTER, `${ CONSOLEDESCRIPTOR }${ consoleCounter }`);
     return consoleCounter;
   }
 
@@ -61,14 +67,14 @@ export class Storage {
    *
    * @param iterationID
    */
-  public static getIteration(iterationID: number): Iteration | null {
+  public static async getIteration(iterationID: number): Promise<Iteration | null> {
     try {
       // return undefined if key is out of range
-      if (iterationID > this.getIterationCounter() || iterationID < 0) {
+      if (iterationID > await this.getIterationCounter() || iterationID < 0) {
         return null;
       }
 
-      return JSON.parse(localStorage.getItem(`${ITERATIONDESCRIPTOR}${iterationID}`) as string);
+      return JSON.parse(await store.get(`${ ITERATIONDESCRIPTOR }${ iterationID }`) as string);
     } catch {
       // catch if item couldn't be parsed
       return null;
@@ -80,14 +86,14 @@ export class Storage {
    *
    * @param consoleLogID
    */
-  public static getConsoleLog(consoleLogID: number): string | null {
+  public static async getConsoleLog(consoleLogID: number): Promise<string | null> {
     try {
       // return undefined if key is out of range
-      if (consoleLogID > this.getConsoleCounter() || consoleLogID < 0) {
+      if (consoleLogID > await this.getConsoleCounter() || consoleLogID < 0) {
         return null;
       }
 
-      return localStorage.getItem(`${CONSOLEDESCRIPTOR}${consoleLogID}`);
+      return await store.get(`${ CONSOLEDESCRIPTOR }${ consoleLogID }`);
     } catch {
       return null;
     }
@@ -96,22 +102,22 @@ export class Storage {
   /**
    * return latest iteration id
    */
-  public static getIterationCounter(): number {
-    return Number(String(localStorage.getItem(ITERATIONCOUNTER)).slice(1));
+  public static async getIterationCounter(): Promise<number> {
+    return Number(String(await store.get(ITERATIONCOUNTER)).slice(1));
   }
 
   /**
    * return latest console log id
    */
-  public static getConsoleCounter(): number {
-    return Number((localStorage.getItem(CONSOLECOUNTER) as string).slice(1));
+  public static async getConsoleCounter(): Promise<number> {
+    return Number((await store.get(CONSOLECOUNTER) as string).slice(1));
   }
 
   /**
    * return current priority
    */
-  public static getPriority(): number {
-    return Number(localStorage.getItem(PRIORITY));
+  public static async getPriority(): Promise<number> {
+    return Number(await store.get(PRIORITY));
   }
 
   /**
@@ -123,15 +129,15 @@ export class Storage {
    *
    * @param percentage
    */
-  public static increasePriority(percentage: number) {
-    this.writeObject(PRIORITY, this.getPriority() + (percentage / 100));
+  public static async increasePriority(percentage: number) {
+    this.writeObject(PRIORITY, (await this.getPriority()) + (percentage / 100));
   }
 
   /**
    * reset priority to the specified value in settings
    */
-  public static resetPriority() {
-    this.writeObject(PRIORITY, defaultPriority);
+  public static async resetPriority() {
+    await this.writeObject(PRIORITY, defaultPriority);
   }
 
   /**
@@ -140,10 +146,10 @@ export class Storage {
    * returns position of new console log
    * @param message
    */
-  public static consoleLog(message: string): number {
+  public static async consoleLog(message: string): Promise<number> {
     const date = new Date();
-    const consoleLogPosition = this.incrementConsoleCounter();
-    this.writeObject(`${CONSOLEDESCRIPTOR}${consoleLogPosition}`, `${date.toDateString()} ${date.toTimeString()} | ${message}`);
+    const consoleLogPosition = await this.incrementConsoleCounter();
+    this.writeObject(`${ CONSOLEDESCRIPTOR }${ consoleLogPosition }`, `${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
     return consoleLogPosition;
   }
 
@@ -153,9 +159,9 @@ export class Storage {
    * returns position of new iteration
    * @param iteration
    */
-  public static newIteration(iteration: Iteration): number {
-    const iterationPosition = this.incrementIterationCounter();
-    this.writeObject(`${ITERATIONDESCRIPTOR}${iterationPosition}`, iteration);
+  public static async newIteration(iteration: Iteration): Promise<number> {
+    const iterationPosition = await this.incrementIterationCounter();
+    this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationPosition }`, iteration);
     return iterationPosition;
   }
 
@@ -167,14 +173,14 @@ export class Storage {
    * @param iterationID
    * @param message
    */
-  public static addMessageToIteration(iterationID: number, message: string): boolean {
+  public static async addMessageToIteration(iterationID: number, message: string): Promise<boolean> {
     try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
+      const iteration: Iteration | null = await this.getIteration(iterationID);
       if (!iteration) return false;
 
       const date = new Date();
-      iteration.messages.push(`${date.toDateString()} ${date.toTimeString()} | ${message}`);
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      iteration.messages.push(`${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
+      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -189,14 +195,14 @@ export class Storage {
    * @param iterationID
    * @param tx
    */
-  public static addTransactionToIteration(iterationID: number, tx: ITransaction): boolean {
+  public static async addTransactionToIteration(iterationID: number, tx: ITransaction): Promise<boolean> {
     try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
+      const iteration: Iteration | null = await this.getIteration(iterationID);
       if (!iteration) return false;
 
       iteration.tx.push(tx);
 
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -211,14 +217,14 @@ export class Storage {
    * @param iterationID
    * @param success
    */
-  public static setSuccessIteration(iterationID: number, success: boolean): boolean {
+  public static async setSuccessIteration(iterationID: number, success: boolean): Promise<boolean> {
     try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
+      const iteration: Iteration | null = await this.getIteration(iterationID);
       if (!iteration) return false;
 
       iteration.success = success;
 
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -233,14 +239,14 @@ export class Storage {
    * @param iterationID
    * @param traded
    */
-  public static setTradedIteration(iterationID: number, traded: string): boolean {
+  public static async setTradedIteration(iterationID: number, traded: string): Promise<boolean> {
     try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
+      const iteration: Iteration | null = await this.getIteration(iterationID);
       if (!iteration) return false;
 
       iteration.traded = traded;
 
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -255,14 +261,14 @@ export class Storage {
    * @param iterationID
    * @param seconds
    */
-  public static setPerformanceIteration(iterationID: number, seconds: number): boolean {
+  public static async setPerformanceIteration(iterationID: number, seconds: number): Promise<boolean> {
     try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
+      const iteration: Iteration | null = await this.getIteration(iterationID);
       if (!iteration) return false;
 
       iteration.seconds = seconds;
 
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -277,14 +283,14 @@ export class Storage {
    * @param iterationID
    * @param inProgress
    */
-  public static setInProgressIteration(iterationID: number, inProgress: boolean): boolean {
+  public static async setInProgressIteration(iterationID: number, inProgress: boolean): Promise<boolean> {
     try {
-      const iteration: Iteration | null = this.getIteration(iterationID);
+      const iteration: Iteration | null = await this.getIteration(iterationID);
       if (!iteration) return false;
 
       iteration.inProgress = inProgress;
 
-      this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;

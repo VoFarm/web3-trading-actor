@@ -7,24 +7,24 @@ export function main() {
   const app = opine();
   const __dirname = dirname(import.meta.url);
   app.use(opineCors());
-  app.use(serveStatic(join(__dirname, '../dist')));
+  app.use(serveStatic(join(__dirname, 'dist')));
 
-  app.use('/', serveStatic(join(__dirname, '../dist')));
+  app.use('/', serveStatic(join(__dirname, 'dist')));
 
-  app.get('/log', (req, res) => {
-    res.json(Storage.getConsoleLog(req.query.id));
+  app.get('/log', async (req, res) => {
+    res.json(await Storage.getConsoleLog(req.query.id));
   });
 
-  app.get('/iteration', (req, res) => {
-    res.json(Storage.getIteration(req.query.id));
+  app.get('/iteration', async (req, res) => {
+    res.json(await Storage.getIteration(req.query.id));
   });
 
-  app.get('/priority', (_, res) => {
-    res.json(Storage.getPriority());
+  app.get('/priority', async (_, res) => {
+    res.json(await Storage.getPriority());
   });
 
-  app.get('/count', (_, res) => {
-    res.send(String(Storage.getIterationCounter()));
+  app.get('/count', async (_, res) => {
+    res.send(String(await Storage.getIterationCounter()));
   });
 
   app.listen(3001, () => console.log('Starting at: http://localhost:3001'));

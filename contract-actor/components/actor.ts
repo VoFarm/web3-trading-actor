@@ -40,7 +40,7 @@ export class Actor {
     const [gasPrice, gasAmount] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation]);
 
     // create raw transaction to execute contract function
-    const rawTx = rawTransactionSend(
+    const rawTx = await rawTransactionSend(
       this.contractOwner,
       Number(gasAmount),
       Number(gasPrice),
@@ -86,7 +86,7 @@ export class Actor {
     const [gasPrice, gasAmount] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation]);
 
     // create raw transaction to execute contract function
-    const rawTx = rawTransactionSend(
+    const rawTx = await rawTransactionSend(
       this.contractOwner,
       Number(gasAmount),
       Number(gasPrice),
