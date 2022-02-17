@@ -1,18 +1,18 @@
-import { IAccount, INet } from './types/web3/web3.ts';
+import { IAccount, INet } from "./types/web3/web3.ts";
 
 export const user: IAccount = {
-  publicKey: '',
-  privateKey: '',
+  publicKey: Deno.env.get("publicAddress") ?? "",
+  privateKey: Deno.env.get("privateKey") ?? "",
 };
 export const actorNet: INet = {
-  url: 'wss://rinkeby.infura.io/ws/v3/',
-  netID: 4,
+  url: Deno.env.get("actorUrl") ?? "",
+  netID: Number(Deno.env.get("actorNetID")) ?? 1,
 };
 export const pairPricerNet: INet = {
-  url: 'wss://mainnet.infura.io/ws/v3/',
-  netID: 1,
+  url: Deno.env.get("pairPricerUrl") ?? "",
+  netID: Number(Deno.env.get("pairPricerNetID")) ?? 1,
 };
 
-export const loopSleepSeconds: number = 120;
+export const loopSleepSeconds: number = Number(Deno.env.get("loopSleepSeconds")) ?? 120;
 
-export const defaultPriority: number = 1.15;
+export const defaultPriority: number = Number(Deno.env.get("defaultPriority")) ?? 1;
