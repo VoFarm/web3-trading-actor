@@ -7,7 +7,7 @@ export const user: IAccount = {
 };
 export const actorNet: INet = {
   url: Deno.env.get('actorUrl') ?? '',
-  netID: Number(Deno.env.get('actorNetID')?? 1),
+  netID: Number(Deno.env.get('actorNetID') ?? 1),
 };
 export const pairPricerNet: INet = {
   url: Deno.env.get('pairPricerUrl') ?? '',
