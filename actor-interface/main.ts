@@ -9,7 +9,7 @@ export function main() {
   app.use(opineCors());
   app.use(serveStatic('./dist'));
 
-  app.use('/', serveStatic( './dist'));
+  app.use('/', serveStatic('./dist'));
 
   app.get('/log', async (req, res) => {
     res.json(await Storage.getConsoleLog(req.query.id));
