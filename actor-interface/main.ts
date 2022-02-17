@@ -19,11 +19,11 @@ export function main() {
     res.json(Storage.getIteration(req.query.id));
   });
 
-  app.get('/priority', (req, res) => {
+  app.get('/priority', (_, res) => {
     res.json(Storage.getPriority());
   });
 
-  app.get('/count', (req, res) => {
+  app.get('/count', (_, res) => {
     res.send(String(Storage.getIterationCounter()));
   });
 

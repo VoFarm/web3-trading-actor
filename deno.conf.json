@@ -1,13 +1,47 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "strict": true
+    "strict": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "checkJs": true,
+    "experimentalDecorators": false,
+    "keyofStringsOnly": false,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitUseStrict": true,
+    "noStrictGenericChecks": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false
   },
   "lint": {
+    "files": {
+      "include": [
+        "contract-actor/",
+        "actor-interface/main.ts",
+        "types",
+        "main.ts"
+      ],
+      "exclude": [
+        "actor-interface/*"
+      ]
+    },
     "rules": {
-      "tags": ["recommended"],
-      "include": ["ban-untagged-todo"],
-      "exclude": ["no-unused-vars"]
+      "tags": [
+        "recommended"
+      ],
+      "include": [
+        "ban-untagged-todo"
+      ]
     }
   },
   "fmt": {
