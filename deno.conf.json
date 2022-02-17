@@ -45,6 +45,17 @@
     }
   },
   "fmt": {
+    "files": {
+      "include": [
+        "contract-actor/",
+        "actor-interface/main.ts",
+        "types",
+        "main.ts"
+      ],
+      "exclude": [
+        "actor-interface/*"
+      ]
+    },
     "options": {
       "useTabs": false,
       "lineWidth": 140,
