@@ -48,5 +48,5 @@ jobs:
         run: npm i svelte-check svelte -g 
       
       - name: Check Svelte Code
-        run: svelte-check
+        run: svelte-check --workspace ./
         working-directory: ${{env.svelte-dir}}
