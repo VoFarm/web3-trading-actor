@@ -8,7 +8,7 @@ jobs:
   create-executable:
     runs-on: ubuntu-latest
     env:
-      svelte-dir: ./contract-actor
+      svelte-dir: ./actor-interface
 
     steps:
       - name: Setup repo
