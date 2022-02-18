@@ -7,8 +7,6 @@ on:
 jobs:
   create-executable:
     runs-on: ubuntu-latest
-    env:
-      svelte-dir: ./actor-interface
 
     steps:
       - name: Setup Repo
@@ -19,10 +17,6 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Copy dist to Root
-        run: mv dist ../
-        working-directory: ${{env.svelte-dir}}
-
       - name: Bundle Project to One File
         run: deno bundle main.ts main.bundled.ts 
 
@@ -30,7 +24,7 @@ jobs:
         run: deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,HTTPPort --output main --no-check main.bundled.ts
         
       - name: Zip Resources to One File
-        run: zip -r trading-actor.zip main .env.example dist
+        run: zip -r trading-actor.zip main .env.example
         
       - name: Release
         uses: softprops/action-gh-release@v1

@@ -1,4 +1,4 @@
-import { IAccount, INet } from './types/web3/web3.ts';
+import { IAccount, INet } from '../../types/web3/web3.ts';
 import 'https://deno.land/x/dotenv/load.ts';
 
 export const user: IAccount = {
@@ -6,8 +6,8 @@ export const user: IAccount = {
   privateKey: Deno.env.get('privateKey') ?? '',
 };
 export const actorNet: INet = {
-  url: Deno.env.get('actorUrl') ?? '',
-  netID: Number(Deno.env.get('actorNetID') ?? 1),
+  url: Deno.env.get('tradingActorUrl') ?? '',
+  netID: Number(Deno.env.get('tradingActorNetID') ?? 1),
 };
 export const pairPricerNet: INet = {
   url: Deno.env.get('pairPricerUrl') ?? '',
@@ -17,3 +17,7 @@ export const pairPricerNet: INet = {
 export const loopSleepSeconds: number = Number(Deno.env.get('sleepSeconds') ?? 120);
 
 export const defaultPriority: number = Number(Deno.env.get('defaultPriority') ?? 1);
+
+export const tradingActorContractAddress: string = Deno.env.get('tradingActorContractAddress') ?? ''
+
+export const httpPort = Number(Deno.env.get('HTTPPort') ?? 3000)
