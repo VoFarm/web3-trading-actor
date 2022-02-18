@@ -1,9 +1,9 @@
 import { Actor } from './components/actor.ts';
-import { TradingContractABI, TradingContractAddress } from './abi/trading.ts';
+import { TradingContractABI } from './abi/trading.ts';
 import { UniswapPoolResponse } from '../types/contracts/uniswap.ts';
 import { PairPricer } from './components/pairPrices.ts';
 import { UniswapContractABI } from './abi/uniswap.ts';
-import { actorNet, loopSleepSeconds, pairPricerNet, user } from './components/settings.ts';
+import { actorNet, loopSleepSeconds, pairPricerNet, tradingActorContractAddress, user } from './components/settings.ts';
 import { NOTMINED, UNDERPRICED } from '../types/errors.ts';
 import { Iteration } from '../types/iteration.ts';
 import { Storage } from './components/storage.ts';
@@ -17,7 +17,7 @@ export async function main() {
   const actor = new Actor(
     actorNet,
     user,
-    TradingContractAddress,
+    tradingActorContractAddress,
     TradingContractABI,
   );
   const pairPricer = new PairPricer(pairPricerNet, UniswapContractABI);
@@ -51,15 +51,15 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
        */
       const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${ tknPair } @ ${ id }`);
 
           // call uniswap contract
           const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
-          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);
+          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${ tknPair } @ ${ uniswapResponse.price }`);
 
           // check if token pair is valid and if the value is plausible
           if (uniswapResponse.price === 'NaN') {
-            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${tknPair}`);
+            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${ tknPair }`);
           } else {
             await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
             await Storage.addMessageToIteration(iterationID, 'Finished Callback');
@@ -90,7 +90,7 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
     } catch (e) {
       await handleError(iterationID, e);
     }
-    Storage.setInProgressIteration(iterationID, false);
+    await Storage.setInProgressIteration(iterationID, false);
     await new Promise((resolve) => setTimeout(resolve, loopSleepSeconds * 1000));
   }
 }
