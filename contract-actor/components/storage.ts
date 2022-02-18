@@ -149,7 +149,7 @@ export class Storage {
   public static async consoleLog(message: string): Promise<number> {
     const date = new Date();
     const consoleLogPosition = await this.incrementConsoleCounter();
-    await this.writeObject(`${ CONSOLEDESCRIPTOR }${ consoleLogPosition }`, `${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
+    await this.writeObject(`${CONSOLEDESCRIPTOR}${consoleLogPosition}`, `${date.toDateString()} ${date.toTimeString()} | ${message}`);
     return consoleLogPosition;
   }
 
@@ -161,7 +161,7 @@ export class Storage {
    */
   public static async newIteration(iteration: Iteration): Promise<number> {
     const iterationPosition = await this.incrementIterationCounter();
-    await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationPosition }`, iteration);
+    await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationPosition}`, iteration);
     return iterationPosition;
   }
 
@@ -180,7 +180,7 @@ export class Storage {
 
       const date = new Date();
       iteration.messages.push(`${date.toDateString()} ${date.toTimeString()} | ${message}`);
-      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -202,7 +202,7 @@ export class Storage {
 
       iteration.tx.push(tx);
 
-      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -224,7 +224,7 @@ export class Storage {
 
       iteration.success = success;
 
-      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -246,7 +246,7 @@ export class Storage {
 
       iteration.traded = traded;
 
-      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -268,7 +268,7 @@ export class Storage {
 
       iteration.seconds = seconds;
 
-      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
@@ -290,7 +290,7 @@ export class Storage {
 
       iteration.inProgress = inProgress;
 
-      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
+      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
       return false;
