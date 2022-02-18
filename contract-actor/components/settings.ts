@@ -18,6 +18,6 @@ export const loopSleepSeconds = Number(Deno.env.get('sleepSeconds') ?? 120);
 
 export const defaultPriority = Number(Deno.env.get('defaultPriority') ?? 1);
 
-export const tradingActorContractAddress: string = Deno.env.get('tradingActorContractAddress') ?? ''
+export const tradingActorContractAddress: string = Deno.env.get('tradingActorContractAddress') ?? '';
 
-export const httpPort = Number(Deno.env.get('HTTPPort') ?? 3000)
+export const httpPort = Number(Deno.env.get('HTTPPort') ?? 3000);
