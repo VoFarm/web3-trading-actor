@@ -14,9 +14,9 @@ export const pairPricerNet: INet = {
   netID: Number(Deno.env.get('pairPricerNetID') ?? 1),
 };
 
-export const loopSleepSeconds: number = Number(Deno.env.get('sleepSeconds') ?? 120);
+export const loopSleepSeconds = Number(Deno.env.get('sleepSeconds') ?? 120);
 
-export const defaultPriority: number = Number(Deno.env.get('defaultPriority') ?? 1);
+export const defaultPriority = Number(Deno.env.get('defaultPriority') ?? 1);
 
 export const tradingActorContractAddress: string = Deno.env.get('tradingActorContractAddress') ?? ''
 
