@@ -1,5 +1,5 @@
 import { Iteration, ITransaction } from '../../types/iteration.ts';
-import { defaultPriority } from '../../settings.ts';
+import { defaultPriority } from './settings.ts';
 import { CONSOLECOUNTER, CONSOLEDESCRIPTOR, ITERATIONCOUNTER, ITERATIONDESCRIPTOR, PRIORITY } from '../../types/storage.ts';
 import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts';
 
