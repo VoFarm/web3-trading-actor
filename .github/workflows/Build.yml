@@ -19,13 +19,6 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Install Snel
-        run: deno run --allow-run --allow-read https://raw.githubusercontent.com/ntrotner/Snel/main/install.ts
-        
-      - name: Generate dist with Snel
-        run: snel build
-        working-directory: ${{env.svelte-dir}}
-
       - name: Copy dist to Root
         run: mv dist ../
         working-directory: ${{env.svelte-dir}}
@@ -34,7 +27,7 @@ jobs:
         run: deno bundle main.ts main.bundled.ts 
 
       - name: Compile main.bundled.ts 
-        run: deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,actorUrl,actorNetID,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority --output main --no-check main.bundled.ts
+        run: deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,HTTPPort --output main --no-check main.bundled.ts
         
       - name: Zip Resources to One File
         run: zip -r trading-actor.zip main .env.example dist

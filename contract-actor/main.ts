@@ -3,7 +3,7 @@ import { TradingContractABI, TradingContractAddress } from './abi/trading.ts';
 import { UniswapPoolResponse } from '../types/contracts/uniswap.ts';
 import { PairPricer } from './components/pairPrices.ts';
 import { UniswapContractABI } from './abi/uniswap.ts';
-import { actorNet, loopSleepSeconds, pairPricerNet, user } from '../settings.ts';
+import { actorNet, loopSleepSeconds, pairPricerNet, user } from './components/settings.ts';
 import { NOTMINED, UNDERPRICED } from '../types/errors.ts';
 import { Iteration } from '../types/iteration.ts';
 import { Storage } from './components/storage.ts';
