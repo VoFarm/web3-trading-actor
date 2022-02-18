@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Setup repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Setup Deno
         uses: denoland/setup-deno@004814556e37c54a2f6e31384c9e18e983317366

@@ -1,7 +1,5 @@
 import { AbiItem } from 'https://deno.land/x/web3@v0.9.2/packages/web3-utils/types/index.d.ts';
 
-export const TradingContractAddress = '0x488ceA002dc222564c116190B5B9c7735092C497';
-
 export const TradingContractABI: Array<AbiItem> = [
   {
     'inputs': [],
