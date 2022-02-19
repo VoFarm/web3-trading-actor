@@ -17,12 +17,20 @@ export function main() {
     res.json(await Storage.getIteration(req.query.id));
   });
 
+  app.get('/price', async (req, res) => {
+    res.json(await Storage.getPrice(req.query.id));
+  });
+
   app.get('/priority', async (_, res) => {
     res.json(await Storage.getPriority());
   });
 
   app.get('/count', async (_, res) => {
     res.send(String(await Storage.getIterationCounter()));
+  });
+
+  app.get('/priceCount', async (_, res) => {
+    res.send(String(await Storage.getPriceCounter()));
   });
 
   app.listen(httpPort, () => console.log(`Starting at: http://localhost:${ httpPort }`));

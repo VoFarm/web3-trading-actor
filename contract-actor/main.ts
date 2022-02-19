@@ -51,15 +51,15 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
        */
       const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${ tknPair } @ ${ id }`);
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
 
           // call uniswap contract
           const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
-          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${ tknPair } @ ${ uniswapResponse.price }`);
+          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);
 
           // check if token pair is valid and if the value is plausible
           if (uniswapResponse.price === 'NaN') {
-            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${ tknPair }`);
+            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${tknPair}`);
           } else {
             await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
             await Storage.addMessageToIteration(iterationID, 'Finished Callback');
@@ -91,6 +91,14 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
       await handleError(iterationID, e);
     }
     await Storage.setInProgressIteration(iterationID, false);
+
+    try {
+      const [primary, secondary] = await Promise.all([actor.getAmountOfPrimaryToken(), actor.getAmountOfSecondaryToken()]);
+      await Storage.newPrice({ primary, secondary, date: new Date() });
+    } catch {
+      await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
+    }
+
     await new Promise((resolve) => setTimeout(resolve, loopSleepSeconds * 1000));
   }
 }
@@ -103,6 +111,7 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
  */
 async function handleError(iterationID: number, message: string) {
   await Storage.addMessageToIteration(iterationID, message);
+  await Storage.setSuccessIteration(iterationID, false);
   if (message === NOTMINED || message === UNDERPRICED) {
     await Storage.increasePriority(5);
   }

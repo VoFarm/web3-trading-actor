@@ -20,4 +20,8 @@ export const defaultPriority = Number(Deno.env.get('defaultPriority') ?? 1);
 
 export const tradingActorContractAddress: string = Deno.env.get('tradingActorContractAddress') ?? '';
 
+export const ERC20TokenAddressPrimary = Deno.env.get('ERC20TokenAddressPrimary') ?? '';
+
+export const ERC20TokenAddressSecondary = Deno.env.get('ERC20TokenAddressSecondary') ?? '';
+
 export const httpPort = Number(Deno.env.get('HTTPPort') ?? 3000);
