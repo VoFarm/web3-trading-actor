@@ -91,6 +91,14 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
       await handleError(iterationID, e);
     }
     await Storage.setInProgressIteration(iterationID, false);
+
+    try {
+      const [primary, secondary] = await Promise.all([actor.getAmountOfPrimaryToken(), actor.getAmountOfSecondaryToken()]);
+      await Storage.newPrice({ primary, secondary, date: new Date() });
+    } catch {
+      await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
+    }
+
     await new Promise((resolve) => setTimeout(resolve, loopSleepSeconds * 1000));
   }
 }
@@ -103,6 +111,7 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
  */
 async function handleError(iterationID: number, message: string) {
   await Storage.addMessageToIteration(iterationID, message);
+  await Storage.setSuccessIteration(iterationID, false);
   if (message === NOTMINED || message === UNDERPRICED) {
     await Storage.increasePriority(5);
   }
