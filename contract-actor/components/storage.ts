@@ -8,7 +8,9 @@ import {
   Price,
   PRICECOUNTER,
   PRICEDESCRIPTOR,
+  PRIMARYNAME,
   PRIORITY,
+  SECONDARYNAME,
 } from '../../types/storage.ts';
 import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts';
 
@@ -188,6 +190,38 @@ export class Storage {
    */
   public static async resetPriority() {
     await this.writeObject(PRIORITY, defaultPriority);
+  }
+
+  /**
+   * write primary name of swapable token
+   *
+   * @param name
+   */
+  public static async setPrimaryName(name: string) {
+    await this.writeObject(PRIMARYNAME, name);
+  }
+
+  /**
+   * get primary name of swapable token
+   */
+  public static async getPrimaryName() {
+    return await store.get(PRIMARYNAME);
+  }
+
+  /**
+   * write secondary name of swapable token
+   *
+   * @param name
+   */
+  public static async setSecondaryName(name: string) {
+    await this.writeObject(SECONDARYNAME, name);
+  }
+
+  /**
+   * get secondary name of swapable token
+   */
+  public static async getSecondaryName() {
+    return await store.get(SECONDARYNAME);
   }
 
   /**

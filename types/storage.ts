@@ -7,6 +7,9 @@ export const ITERATIONDESCRIPTOR = 'i';
 export const CONSOLEDESCRIPTOR = 'c';
 export const PRICEDESCRIPTOR = 'p';
 
+export const PRIMARYNAME = 'pn';
+export const SECONDARYNAME = 'sn';
+
 export interface Price {
   primary: number;
   secondary: number;
