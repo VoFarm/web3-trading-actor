@@ -147,6 +147,24 @@ export class Actor {
   }
 
   /**
+   * return official name of the token
+   */
+  public async getPrimaryTokenName(): Promise<string> {
+    const contract = this.generateContractForBalanceRequest(ERC20TokenAddressPrimary);
+
+    return await contract.methods.name().call();
+  }
+
+  /**
+   * return official name of the token
+   */
+  public async getSecondaryTokenName(): Promise<string> {
+    const contract = this.generateContractForBalanceRequest(ERC20TokenAddressSecondary);
+
+    return await contract.methods.name().call();
+  }
+
+  /**
    * generate a default contract to access default functions
    *
    * @param contractAddress

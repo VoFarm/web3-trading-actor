@@ -21,6 +21,14 @@ export function main() {
     res.json(await Storage.getPrice(req.query.id));
   });
 
+  app.get('/primaryName', async (req, res) => {
+    res.json(await Storage.getPrimaryName());
+  });
+
+  app.get('/secondaryName', async (req, res) => {
+    res.json(await Storage.getSecondaryName());
+  });
+
   app.get('/priority', async (_, res) => {
     res.json(await Storage.getPriority());
   });
