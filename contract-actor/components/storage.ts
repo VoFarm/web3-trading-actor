@@ -2,7 +2,7 @@ import { Iteration, ITransaction } from '../../types/iteration.ts';
 import { defaultPriority, tradingActorContractAddress } from './settings.ts';
 import {
   CONSOLECOUNTER,
-  CONSOLEDESCRIPTOR,
+  CONSOLEDESCRIPTOR, CONTRACTNAME,
   ITERATIONCOUNTER,
   ITERATIONDESCRIPTOR,
   Price,
@@ -15,7 +15,7 @@ import {
 import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts';
 
 const store = new Store({
-  name: `${tradingActorContractAddress}.json`,
+  name: `${ tradingActorContractAddress }.json`,
   path: './storage',
 });
 
@@ -28,17 +28,17 @@ export class Storage {
   public static async initializeStorage() {
     // set counter for the console log
     if (!await store.get(CONSOLECOUNTER)) {
-      await store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}-1`);
+      await store.set(CONSOLECOUNTER, `${ CONSOLEDESCRIPTOR }-1`);
     }
 
     // set counter for the iteration
     if (!await store.get(ITERATIONCOUNTER)) {
-      await store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}-1`);
+      await store.set(ITERATIONCOUNTER, `${ ITERATIONDESCRIPTOR }-1`);
     }
 
     // set counter for the price
     if (!await store.get(PRICECOUNTER)) {
-      await store.set(PRICECOUNTER, `${PRICEDESCRIPTOR}-1`);
+      await store.set(PRICECOUNTER, `${ PRICEDESCRIPTOR }-1`);
     }
 
     // always reset priority to default value after initialization
@@ -63,7 +63,7 @@ export class Storage {
    */
   private static async incrementIterationCounter(): Promise<number> {
     const iterationCounter = (await this.getIterationCounter()) + 1;
-    await store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}${iterationCounter}`);
+    await store.set(ITERATIONCOUNTER, `${ ITERATIONDESCRIPTOR }${ iterationCounter }`);
     return iterationCounter;
   }
 
@@ -74,7 +74,7 @@ export class Storage {
    */
   private static async incrementConsoleCounter(): Promise<number> {
     const consoleCounter = (await this.getConsoleCounter()) + 1;
-    await store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}${consoleCounter}`);
+    await store.set(CONSOLECOUNTER, `${ CONSOLEDESCRIPTOR }${ consoleCounter }`);
     return consoleCounter;
   }
 
@@ -85,7 +85,7 @@ export class Storage {
    */
   private static async incrementPriceCounter(): Promise<number> {
     const priceCounter = (await this.getPriceCounter()) + 1;
-    await store.set(PRICECOUNTER, `${PRICEDESCRIPTOR}${priceCounter}`);
+    await store.set(PRICECOUNTER, `${ PRICEDESCRIPTOR }${ priceCounter }`);
     return priceCounter;
   }
 
@@ -101,7 +101,7 @@ export class Storage {
         return null;
       }
 
-      return JSON.parse(await store.get(`${ITERATIONDESCRIPTOR}${iterationID}`) as string);
+      return JSON.parse(await store.get(`${ ITERATIONDESCRIPTOR }${ iterationID }`) as string);
     } catch {
       // catch if item couldn't be parsed
       return null;
@@ -120,7 +120,7 @@ export class Storage {
         return null;
       }
 
-      return await store.get(`${CONSOLEDESCRIPTOR}${consoleLogID}`);
+      return await store.get(`${ CONSOLEDESCRIPTOR }${ consoleLogID }`);
     } catch {
       return null;
     }
@@ -138,7 +138,7 @@ export class Storage {
         return null;
       }
 
-      return JSON.parse(await store.get(`${PRICEDESCRIPTOR}${priceID}`));
+      return JSON.parse(await store.get(`${ PRICEDESCRIPTOR }${ priceID }`));
     } catch {
       return null;
     }
@@ -225,6 +225,22 @@ export class Storage {
   }
 
   /**
+   * write name of contract
+   *
+   * @param name
+   */
+  public static async setContractName(name: string) {
+    await this.writeObject(CONTRACTNAME, name);
+  }
+
+  /**
+   * get name of contract
+   */
+  public static async getContractName() {
+    return await store.get(CONTRACTNAME);
+  }
+
+  /**
    * writes new console log to the storage
    *
    * returns position of new console log
@@ -233,7 +249,7 @@ export class Storage {
   public static async consoleLog(message: string): Promise<number> {
     const date = new Date();
     const consoleLogPosition = await this.incrementConsoleCounter();
-    await this.writeObject(`${CONSOLEDESCRIPTOR}${consoleLogPosition}`, `${date.toDateString()} ${date.toTimeString()} | ${message}`);
+    await this.writeObject(`${ CONSOLEDESCRIPTOR }${ consoleLogPosition }`, `${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
     return consoleLogPosition;
   }
 
@@ -245,7 +261,7 @@ export class Storage {
    */
   public static async newIteration(iteration: Iteration): Promise<number> {
     const iterationPosition = await this.incrementIterationCounter();
-    await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationPosition}`, iteration);
+    await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationPosition }`, iteration);
     return iterationPosition;
   }
 
@@ -257,7 +273,7 @@ export class Storage {
    */
   public static async newPrice(price: Price): Promise<number> {
     const pricePosition = await this.incrementPriceCounter();
-    await this.writeObject(`${PRICEDESCRIPTOR}${pricePosition}`, JSON.stringify(price));
+    await this.writeObject(`${ PRICEDESCRIPTOR }${ pricePosition }`, JSON.stringify(price));
     return pricePosition;
   }
 
@@ -275,8 +291,8 @@ export class Storage {
       if (!iteration) return false;
 
       const date = new Date();
-      iteration.messages.push(`${date.toDateString()} ${date.toTimeString()} | ${message}`);
-      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      iteration.messages.push(`${ date.toDateString() } ${ date.toTimeString() } | ${ message }`);
+      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -298,7 +314,7 @@ export class Storage {
 
       iteration.tx.push(tx);
 
-      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -320,7 +336,7 @@ export class Storage {
 
       iteration.success = success;
 
-      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -342,7 +358,7 @@ export class Storage {
 
       iteration.traded = traded;
 
-      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -364,7 +380,7 @@ export class Storage {
 
       iteration.seconds = seconds;
 
-      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
@@ -386,7 +402,7 @@ export class Storage {
 
       iteration.inProgress = inProgress;
 
-      await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
+      await this.writeObject(`${ ITERATIONDESCRIPTOR }${ iterationID }`, iteration);
       return true;
     } catch {
       return false;
