@@ -3,6 +3,7 @@ import { defaultPriority, tradingActorContractAddress } from './settings.ts';
 import {
   CONSOLECOUNTER,
   CONSOLEDESCRIPTOR,
+  CONTRACTNAME,
   ITERATIONCOUNTER,
   ITERATIONDESCRIPTOR,
   Price,
@@ -222,6 +223,22 @@ export class Storage {
    */
   public static async getSecondaryName() {
     return await store.get(SECONDARYNAME);
+  }
+
+  /**
+   * write name of contract
+   *
+   * @param name
+   */
+  public static async setContractName(name: string) {
+    await this.writeObject(CONTRACTNAME, name);
+  }
+
+  /**
+   * get name of contract
+   */
+  public static async getContractName() {
+    return await store.get(CONTRACTNAME);
   }
 
   /**

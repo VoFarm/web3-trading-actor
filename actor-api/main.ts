@@ -29,6 +29,10 @@ export function main() {
     res.json(await Storage.getSecondaryName());
   });
 
+  app.get('/contractName', async (req, res) => {
+    res.json(await Storage.getContractName());
+  });
+
   app.get('/priority', async (_, res) => {
     res.json(await Storage.getPriority());
   });

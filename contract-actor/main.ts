@@ -98,9 +98,14 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
       await Storage.newPrice({ primary, secondary, date: new Date() });
 
       // refresh names of the swapable tokens
-      const [primaryName, secondaryName] = await Promise.all([actor.getPrimaryTokenName(), actor.getSecondaryTokenName()]);
+      const [primaryName, secondaryName, contractName] = await Promise.all([
+        actor.getPrimaryTokenName(),
+        actor.getSecondaryTokenName(),
+        actor.getContractName(),
+      ]);
       await Storage.setPrimaryName(primaryName);
       await Storage.setSecondaryName(secondaryName);
+      await Storage.setContractName(contractName);
     } catch {
       await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
     }

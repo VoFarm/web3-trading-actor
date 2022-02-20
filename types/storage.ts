@@ -10,6 +10,8 @@ export const PRICEDESCRIPTOR = 'p';
 export const PRIMARYNAME = 'pn';
 export const SECONDARYNAME = 'sn';
 
+export const CONTRACTNAME = 'cn';
+
 export interface Price {
   primary: number;
   secondary: number;

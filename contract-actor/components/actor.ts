@@ -165,6 +165,13 @@ export class Actor {
   }
 
   /**
+   * return official name of the contract
+   */
+  public async getContractName(): Promise<string> {
+    return await this.contract.methods.name().call();
+  }
+
+  /**
    * generate a default contract to access default functions
    *
    * @param contractAddress
