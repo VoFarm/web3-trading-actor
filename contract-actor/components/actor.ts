@@ -180,5 +180,4 @@ export class Actor {
   private generateContractForBalanceRequest(contractAddress: string): Contract {
     return new this.web3.eth.Contract(defaultContract, contractAddress, {});
   }
-
 }

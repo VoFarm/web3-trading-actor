@@ -51,15 +51,15 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
        */
       const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${ tknPair } @ ${ id }`);
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
 
           // call uniswap contract
           const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
-          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${ tknPair } @ ${ uniswapResponse.price }`);
+          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);
 
           // check if token pair is valid and if the value is plausible
           if (uniswapResponse.price === 'NaN') {
-            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${ tknPair }`);
+            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${tknPair}`);
           } else {
             await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
             await Storage.addMessageToIteration(iterationID, 'Finished Callback');
@@ -98,10 +98,14 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
       await Storage.newPrice({ primary, secondary, date: new Date() });
 
       // refresh names of the swapable tokens
-      const [primaryName, secondaryName, contractName] = await Promise.all([actor.getPrimaryTokenName(), actor.getSecondaryTokenName(), actor.getContractName()]);
+      const [primaryName, secondaryName, contractName] = await Promise.all([
+        actor.getPrimaryTokenName(),
+        actor.getSecondaryTokenName(),
+        actor.getContractName(),
+      ]);
       await Storage.setPrimaryName(primaryName);
       await Storage.setSecondaryName(secondaryName);
-      await Storage.setContractName(contractName)
+      await Storage.setContractName(contractName);
     } catch {
       await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
     }
