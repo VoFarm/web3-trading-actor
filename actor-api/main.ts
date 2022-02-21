@@ -10,20 +10,25 @@ import { initializePriceAPI } from './price.ts';
  * start endpoints for public access
  */
 export function main() {
-  const app = opine();
-  app.use(opineCors());
+  try {
+    const app = opine();
+    app.use(opineCors());
 
-  initalizeIterationAPI(app);
-  initializeLogAPI(app);
-  initializeMetaDataAPI(app);
-  initializePriceAPI(app);
+    initalizeIterationAPI(app);
+    initializeLogAPI(app);
+    initializeMetaDataAPI(app);
+    initializePriceAPI(app);
 
-  /**
-   * health check
-   */
-  app.get('/', (_, res) => {
-    res.sendStatus(200);
-  });
+    /**
+     * health check
+     */
+    app.get('/', (_, res) => {
+      res.sendStatus(200);
+    });
 
-  app.listen(httpPort, () => console.log(`Starting at: http://localhost:${httpPort}`));
+    app.listen(httpPort, () => console.log(`Starting at: http://localhost:${ httpPort }`));
+    return true
+  } catch {
+    return false
+  }
 }

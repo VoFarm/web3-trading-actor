@@ -12,7 +12,7 @@ export type { EventData };
  * @param providerURL
  */
 export function initWeb3(providerURL: string): Web3 {
-  return new Web3(providerURL);
+  return (new Web3(new Web3.providers.WebsocketProvider(providerURL)));
 }
 
 /**
