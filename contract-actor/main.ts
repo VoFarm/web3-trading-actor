@@ -18,8 +18,8 @@ export async function main(): Promise<boolean> {
 
     // run iterations
     await startBot(actor, pairPricer);
-    return true
+    return true;
   } catch {
-    return false
+    return false;
   }
 }

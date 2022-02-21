@@ -26,9 +26,9 @@ export function main() {
       res.sendStatus(200);
     });
 
-    app.listen(httpPort, () => console.log(`Starting at: http://localhost:${ httpPort }`));
-    return true
+    app.listen(httpPort, () => console.log(`Starting at: http://localhost:${httpPort}`));
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
