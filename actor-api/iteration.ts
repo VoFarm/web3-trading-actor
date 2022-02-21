@@ -38,7 +38,7 @@ export function initalizeIterationAPI(app: Opine): Opine {
       }
 
       // get past iterations
-      for (let i = counter; i >= ((counter - lastID) < 0 ? 0 : (counter - lastID)); i--) {
+      for (let i = counter; i >= (lastID < 0 ? 0 : lastID); i--) {
         allIterations.push(await Storage.getIteration(i));
       }
 

@@ -38,7 +38,7 @@ export function initializePriceAPI(app: Opine): Opine {
       }
 
       // get past prices
-      for (let i = counter; i >= ((counter - lastID) < 0 ? 0 : (counter - lastID)); i--) {
+      for (let i = counter; i >= (lastID < 0 ? 0 : lastID); i--) {
         allPrices.push(await Storage.getPrice(i));
       }
 
