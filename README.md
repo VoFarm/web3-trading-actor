@@ -10,7 +10,7 @@
 
 1. Download a release version
 2. Rename `.env.example` to `.env` and adjust the parameters
-3. Run `./main` and access the API with `http://localhost:HTTPPort`
+3. Run `./trading-actor-binary` and access the API with `http://localhost:HTTPPort`
 
 ### Source
 
@@ -26,5 +26,5 @@ deno run --allow-net --allow-read --allow-write --allow-env=publicAddress,privat
 
 ```
 deno bundle main.ts main.bundled.ts
-deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorContractAddress,ERC20TokenAddressPrimary,ERC20TokenAddressSecondary,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,HTTPPort --output main --no-check main.bundled.ts
+deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorContractAddress,ERC20TokenAddressPrimary,ERC20TokenAddressSecondary,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,HTTPPort --output trading-actor-binary --no-check main.bundled.ts
 ```
