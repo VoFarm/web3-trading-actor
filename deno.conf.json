@@ -26,13 +26,10 @@
   "lint": {
     "files": {
       "include": [
-        "contract-actor/",
-        "actor-interface/main.ts",
+        "contract-actor",
+        "actor-api",
         "types",
         "main.ts"
-      ],
-      "exclude": [
-        "actor-interface/*"
       ]
     },
     "rules": {
@@ -47,13 +44,10 @@
   "fmt": {
     "files": {
       "include": [
-        "contract-actor/",
-        "actor-interface/main.ts",
+        "contract-actor",
+        "actor-api",
         "types",
         "main.ts"
-      ],
-      "exclude": [
-        "actor-interface/*"
       ]
     },
     "options": {
