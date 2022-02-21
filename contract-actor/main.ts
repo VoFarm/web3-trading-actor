@@ -91,24 +91,7 @@ async function startBot(actor: Actor, pairPricer: PairPricer) {
       await handleError(iterationID, e);
     }
     await Storage.setInProgressIteration(iterationID, false);
-
-    try {
-      // get current balance of swapable tokens from the contract
-      const [primary, secondary] = await Promise.all([actor.getAmountOfPrimaryToken(), actor.getAmountOfSecondaryToken()]);
-      await Storage.newPrice({ primary, secondary, date: new Date() });
-
-      // refresh names of the swapable tokens
-      const [primaryName, secondaryName, contractName] = await Promise.all([
-        actor.getPrimaryTokenName(),
-        actor.getSecondaryTokenName(),
-        actor.getContractName(),
-      ]);
-      await Storage.setPrimaryName(primaryName);
-      await Storage.setSecondaryName(secondaryName);
-      await Storage.setContractName(contractName);
-    } catch {
-      await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
-    }
+    await recordMetaData(iterationID, actor);
 
     await new Promise((resolve) => setTimeout(resolve, loopSleepSeconds * 1000));
   }
@@ -125,5 +108,35 @@ async function handleError(iterationID: number, message: string) {
   await Storage.setSuccessIteration(iterationID, false);
   if (message === NOTMINED || message === UNDERPRICED) {
     await Storage.increasePriority(5);
+  }
+}
+
+/**
+ * records meta data for delivering api
+ *
+ * @param iterationID
+ * @param actor
+ */
+async function recordMetaData(iterationID: number, actor: Actor) {
+  try {
+    // get current balance of swapable tokens from the contract
+    const [primary, secondary] = await Promise.all([actor.getAmountOfPrimaryToken(), actor.getAmountOfSecondaryToken()]);
+    await Storage.newPrice({ primary, secondary, date: new Date() });
+  } catch {
+    await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
+  }
+
+  try {
+    // refresh names of the swapable tokens
+    const [primaryName, secondaryName, contractName] = await Promise.all([
+      actor.getPrimaryTokenName(),
+      actor.getSecondaryTokenName(),
+      actor.getContractName(),
+    ]);
+    await Storage.setPrimaryName(primaryName);
+    await Storage.setSecondaryName(secondaryName);
+    await Storage.setContractName(contractName);
+  } catch {
+    await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Contract and Token Names');
   }
 }
