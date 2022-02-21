@@ -15,12 +15,12 @@ import {
 } from '../../types/storage.ts';
 import { Store } from 'https://raw.githubusercontent.com/acathur/store/master/mod.ts';
 
-const store = new Store({
-  name: `${tradingActorContractAddress}.json`,
-  path: './storage',
-});
-
 export class Storage {
+  static store = new Store({
+    name: `${tradingActorContractAddress}.json`,
+    path: './storage',
+  });
+
   /**
    * initialize storage to a default state if nothing is set
    *
@@ -28,22 +28,22 @@ export class Storage {
    */
   public static async initializeStorage() {
     // set counter for the console log
-    if (!await store.get(CONSOLECOUNTER)) {
-      await store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}-1`);
+    if (!await this.store.get(CONSOLECOUNTER)) {
+      await this.store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}-1`);
     }
 
     // set counter for the iteration
-    if (!await store.get(ITERATIONCOUNTER)) {
-      await store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}-1`);
+    if (!await this.store.get(ITERATIONCOUNTER)) {
+      await this.store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}-1`);
     }
 
     // set counter for the price
-    if (!await store.get(PRICECOUNTER)) {
-      await store.set(PRICECOUNTER, `${PRICEDESCRIPTOR}-1`);
+    if (!await this.store.get(PRICECOUNTER)) {
+      await this.store.set(PRICECOUNTER, `${PRICEDESCRIPTOR}-1`);
     }
 
     // always reset priority to default value after initialization
-    await store.set(PRIORITY, JSON.stringify(defaultPriority));
+    await this.store.set(PRIORITY, JSON.stringify(defaultPriority));
   }
 
   /**
@@ -54,7 +54,7 @@ export class Storage {
    * @private
    */
   private static async writeObject(key: string, input: Record<string, unknown> | number | string) {
-    await store.set(key, JSON.stringify(input));
+    await this.store.set(key, JSON.stringify(input));
   }
 
   /**
@@ -64,7 +64,7 @@ export class Storage {
    */
   private static async incrementIterationCounter(): Promise<number> {
     const iterationCounter = (await this.getIterationCounter()) + 1;
-    await store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}${iterationCounter}`);
+    await this.store.set(ITERATIONCOUNTER, `${ITERATIONDESCRIPTOR}${iterationCounter}`);
     return iterationCounter;
   }
 
@@ -75,7 +75,7 @@ export class Storage {
    */
   private static async incrementConsoleCounter(): Promise<number> {
     const consoleCounter = (await this.getConsoleCounter()) + 1;
-    await store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}${consoleCounter}`);
+    await this.store.set(CONSOLECOUNTER, `${CONSOLEDESCRIPTOR}${consoleCounter}`);
     return consoleCounter;
   }
 
@@ -86,7 +86,7 @@ export class Storage {
    */
   private static async incrementPriceCounter(): Promise<number> {
     const priceCounter = (await this.getPriceCounter()) + 1;
-    await store.set(PRICECOUNTER, `${PRICEDESCRIPTOR}${priceCounter}`);
+    await this.store.set(PRICECOUNTER, `${PRICEDESCRIPTOR}${priceCounter}`);
     return priceCounter;
   }
 
@@ -102,7 +102,7 @@ export class Storage {
         return null;
       }
 
-      return JSON.parse(await store.get(`${ITERATIONDESCRIPTOR}${iterationID}`) as string);
+      return JSON.parse(await this.store.get(`${ITERATIONDESCRIPTOR}${iterationID}`) as string);
     } catch {
       // catch if item couldn't be parsed
       return null;
@@ -121,7 +121,7 @@ export class Storage {
         return null;
       }
 
-      return await store.get(`${CONSOLEDESCRIPTOR}${consoleLogID}`);
+      return await this.store.get(`${CONSOLEDESCRIPTOR}${consoleLogID}`);
     } catch {
       return null;
     }
@@ -139,7 +139,7 @@ export class Storage {
         return null;
       }
 
-      return JSON.parse(await store.get(`${PRICEDESCRIPTOR}${priceID}`));
+      return JSON.parse(await this.store.get(`${PRICEDESCRIPTOR}${priceID}`));
     } catch {
       return null;
     }
@@ -149,28 +149,28 @@ export class Storage {
    * return latest iteration id
    */
   public static async getIterationCounter(): Promise<number> {
-    return Number(String(await store.get(ITERATIONCOUNTER)).slice(1));
+    return Number(String(await this.store.get(ITERATIONCOUNTER)).slice(1));
   }
 
   /**
    * return latest console log id
    */
   public static async getConsoleCounter(): Promise<number> {
-    return Number((await store.get(CONSOLECOUNTER) as string).slice(1));
+    return Number((await this.store.get(CONSOLECOUNTER) as string).slice(1));
   }
 
   /**
    * return latest price id
    */
   public static async getPriceCounter(): Promise<number> {
-    return Number((await store.get(PRICECOUNTER) as string).slice(1));
+    return Number((await this.store.get(PRICECOUNTER) as string).slice(1));
   }
 
   /**
    * return current priority
    */
   public static async getPriority(): Promise<number> {
-    return Number(await store.get(PRIORITY));
+    return Number(await this.store.get(PRIORITY));
   }
 
   /**
@@ -206,7 +206,7 @@ export class Storage {
    * get primary name of swapable token
    */
   public static async getPrimaryName() {
-    return await store.get(PRIMARYNAME);
+    return await this.store.get(PRIMARYNAME);
   }
 
   /**
@@ -222,7 +222,7 @@ export class Storage {
    * get secondary name of swapable token
    */
   public static async getSecondaryName() {
-    return await store.get(SECONDARYNAME);
+    return await this.store.get(SECONDARYNAME);
   }
 
   /**
@@ -238,7 +238,7 @@ export class Storage {
    * get name of contract
    */
   public static async getContractName() {
-    return await store.get(CONTRACTNAME);
+    return await this.store.get(CONTRACTNAME);
   }
 
   /**
