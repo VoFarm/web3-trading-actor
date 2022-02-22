@@ -18,6 +18,8 @@ export const loopSleepSeconds = Number(Deno.env.get('sleepSeconds') ?? 120);
 
 export const defaultPriority = Number(Deno.env.get('defaultPriority') ?? 1);
 
+export const maxPriority = Number(Deno.env.get('maxPriority') ?? 2);
+
 export const tradingActorContractAddress: string = Deno.env.get('tradingActorContractAddress') ?? '';
 
 export const ERC20TokenAddressPrimary = Deno.env.get('ERC20TokenAddressPrimary') ?? '';

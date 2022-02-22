@@ -40,7 +40,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
 
           // check if token pair is valid and if the value is plausible
           if (uniswapResponse.price === 'NaN') {
-            await Storage.addMessageToIteration(iterationID, `ERROR: Switch Case Failed for Uniswap with Pair: ${tknPair}`);
+            throw new Error(`Switch Case Failed for Uniswap with Pair: ${tknPair}`);
           } else {
             await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
             await Storage.addMessageToIteration(iterationID, 'Finished Callback');

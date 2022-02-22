@@ -2,6 +2,7 @@ import Web3 from 'https://deno.land/x/web3@v0.9.2/mod.ts';
 import { EventData } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
 import { IAccount, IRawTransaction } from '../../types/web3/web3.ts';
 import { Storage } from './storage.ts';
+import { maxPriority } from './settings.ts';
 
 export { Web3 };
 export type { EventData };
@@ -27,16 +28,20 @@ export function initWeb3(providerURL: string): Web3 {
  */
 export async function rawTransactionSend(
   contractOwner: IAccount,
-  gasEstimation: number,
-  gasPrice: number,
+  gasEstimation: string,
+  gasPrice: string,
   contractAddress: string,
   contractData: string,
   chainId: number,
 ): Promise<IRawTransaction> {
+  if (isNaN(Number(gasEstimation)) || isNaN(Number(gasPrice))) {
+    throw new Error('Gas isn\'t a Number');
+  }
+
   return {
-    'gasLimit': Web3.utils.toHex(Number(gasEstimation.toFixed(0))),
+    'gasLimit': Web3.utils.toHex(Number(gasEstimation).toFixed(0)),
     'gasPrice': Web3.utils.toHex(
-      Number((gasPrice * await Storage.getPriority()).toFixed(0)),
+      Number((Number(gasPrice) * Math.min(await Storage.getPriority(), maxPriority)).toFixed(0)),
     ),
     'from': contractOwner.publicKey,
     'to': contractAddress,

@@ -44,8 +44,8 @@ export class Actor {
     // create raw transaction to execute contract function
     const rawTx = await rawTransactionSend(
       this.contractOwner,
-      Number(gasAmount),
-      Number(gasPrice),
+      gasAmount,
+      gasPrice,
       this.contract.options.address,
       data,
       this.netSettings.netID,
@@ -54,8 +54,12 @@ export class Actor {
     // sign and send transcation
     const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey);
 
+    if (!signedTransaction.rawTransaction || (typeof signedTransaction.rawTransaction) !== 'string') {
+      throw new Error('Signed Transaction couldn\'t be created');
+    }
+
     return {
-      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)).transactionHash,
+      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash,
       descriptor: 'Swap Transaction',
       gasLimit: Number(gasAmount),
       gasPrice: Number(gasPrice),
@@ -90,8 +94,8 @@ export class Actor {
     // create raw transaction to execute contract function
     const rawTx = await rawTransactionSend(
       this.contractOwner,
-      Number(gasAmount),
-      Number(gasPrice),
+      gasAmount,
+      gasPrice,
       this.contract.options.address,
       data,
       this.netSettings.netID,
@@ -100,8 +104,12 @@ export class Actor {
     // sign and send transcation
     const signedTransaction = await this.web3.eth.accounts.signTransaction(rawTx, this.contractOwner.privateKey);
 
+    if (!signedTransaction.rawTransaction || (typeof signedTransaction.rawTransaction) !== 'string') {
+      throw new Error('Signed Transaction couldn\'t be created');
+    }
+
     return {
-      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction as string)).transactionHash,
+      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash,
       descriptor: 'Price Callback',
       gasLimit: Number(rawTx.gasLimit),
       gasPrice: Number(rawTx.gasPrice),
