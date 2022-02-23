@@ -29,13 +29,17 @@ export class PairPricer {
    * @private
    */
   private async callContractSwap(contract: Contract): Promise<UniswapPoolResponse> {
-    const sqrtPriceX96 = await contract.methods.slot0().call();
+    try {
+      const sqrtPriceX96 = await contract.methods.slot0().call();
 
-    const price = this.web3.utils.toBN(`${sqrtPriceX96[0]}`)
-      .pow(this.web3.utils.toBN(2))
-      .mul(this.web3.utils.toBN(10 ** 18))
-      .div(this.web3.utils.toBN(2).pow(Web3.utils.toBN(192)));
-    return { price: price.toString() };
+      const price = this.web3.utils.toBN(`${sqrtPriceX96[0]}`)
+        .pow(this.web3.utils.toBN(2))
+        .mul(this.web3.utils.toBN(10 ** 18))
+        .div(this.web3.utils.toBN(2).pow(Web3.utils.toBN(192)));
+      return { price: price.toString() };
+    } catch {
+      return { price: 'NaN' };
+    }
   }
 
   /**
