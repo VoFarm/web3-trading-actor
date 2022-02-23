@@ -21,7 +21,7 @@ export function initializePriceAPI(app: Opine): Opine {
   });
 
   /**
-   * returns all prices starting at position ?lastID=number
+   * returns all prices starting at position ?lastID=number and ending at ?earliestID=number
    *
    * @returns Price[]
    */
@@ -30,15 +30,16 @@ export function initializePriceAPI(app: Opine): Opine {
       const allPrices: (Price | null)[] = [];
       const counter = await Storage.getPriceCounter();
       const lastID = Number(req.query.lastID);
+      const earliestID = Number(req.query.earliestID);
 
       // return empty if id isn't in range
-      if (counter < lastID) {
+      if (counter < lastID || counter > earliestID || earliestID < lastID) {
         res.json([]);
         return;
       }
 
       // get past prices
-      for (let i = counter; i >= (lastID < 0 ? 0 : lastID); i--) {
+      for (let i = earliestID; i >= (lastID < 0 ? 0 : lastID); i--) {
         allPrices.push(await Storage.getPrice(i));
       }
 

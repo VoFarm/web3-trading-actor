@@ -21,7 +21,7 @@ export function initalizeIterationAPI(app: Opine): Opine {
   });
 
   /**
-   * returns all Iterations starting at position ?lastID=number
+   * returns all Iterations starting at position ?lastID=number and ending at ?earliestID=number
    *
    * @returns Iteration[]
    */
@@ -30,15 +30,16 @@ export function initalizeIterationAPI(app: Opine): Opine {
       const allIterations: (Iteration | null)[] = [];
       const counter = await Storage.getIterationCounter();
       const lastID = Number(req.query.lastID);
+      const earliestID = Number(req.query.earliestID);
 
       // return empty if id isn't in range
-      if (counter < lastID) {
+      if (counter < lastID || counter > earliestID || earliestID < lastID) {
         res.json([]);
         return;
       }
 
       // get past iterations
-      for (let i = counter; i >= (lastID < 0 ? 0 : lastID); i--) {
+      for (let i = earliestID; i >= (lastID < 0 ? 0 : lastID); i--) {
         allIterations.push(await Storage.getIteration(i));
       }
 
