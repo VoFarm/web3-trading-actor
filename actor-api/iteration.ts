@@ -33,7 +33,7 @@ export function initalizeIterationAPI(app: Opine): Opine {
       const earliestID = Number(req.query.earliestID);
 
       // return empty if id isn't in range
-      if (counter < lastID || counter > earliestID || earliestID < lastID) {
+      if (counter < lastID || counter < earliestID || earliestID < lastID) {
         res.json([]);
         return;
       }
