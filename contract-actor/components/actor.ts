@@ -58,9 +58,9 @@ export class Actor {
       throw new Error('Signed Transaction couldn\'t be created');
     }
 
-    let transactionHash: string | undefined = undefined
+    let transactionHash: string | undefined = undefined;
     try {
-      transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash
+      transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash;
     } catch {
       // keep undefined
     }
@@ -115,9 +115,9 @@ export class Actor {
       throw new Error('Signed Transaction couldn\'t be created');
     }
 
-    let transactionHash: string | undefined = undefined
+    let transactionHash: string | undefined = undefined;
     try {
-      transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash
+      transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash;
     } catch {
       // keep undefined
     }
