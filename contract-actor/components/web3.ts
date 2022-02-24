@@ -14,19 +14,12 @@ export type { EventData };
  */
 export function initWeb3(providerURL: string): Web3 {
   const options = {
-    timeout: 30000,
-
-    clientConfig: {
-      keepalive: true,
-      keepaliveInterval: 60000,
-    },
-
     // Enable auto reconnection
     reconnect: {
       auto: true,
       delay: 10000,
-      maxAttempts: 999,
-      onTimeout: false,
+      maxAttempts: 9999,
+      onTimeout: true,
     },
   };
 
