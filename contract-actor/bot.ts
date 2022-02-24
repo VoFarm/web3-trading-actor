@@ -46,7 +46,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
             if (!response.tx) {
               await Storage.addMessageToIteration(iterationID, 'Callback Failed');
             } else {
-              await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
+              await Storage.addTransactionToIteration(iterationID, response);
               await Storage.addMessageToIteration(iterationID, 'Finished Callback');
             }
           }
