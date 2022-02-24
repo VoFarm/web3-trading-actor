@@ -13,7 +13,24 @@ export type { EventData };
  * @param providerURL
  */
 export function initWeb3(providerURL: string): Web3 {
-  return (new Web3(new Web3.providers.WebsocketProvider(providerURL)));
+  const options = {
+    timeout: 30000,
+
+    clientConfig: {
+      keepalive: true,
+      keepaliveInterval: 60000
+    },
+
+    // Enable auto reconnection
+    reconnect: {
+      auto: true,
+      delay: 10000,
+      maxAttempts: 999,
+      onTimeout: false
+    }
+  };
+
+  return (new Web3(new Web3.providers.WebsocketProvider(providerURL, options)));
 }
 
 /**
