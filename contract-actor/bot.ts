@@ -42,8 +42,13 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
           if (uniswapResponse.price === 'NaN') {
             throw new Error(`Switch Case Failed for Uniswap with Pair: ${tknPair}`);
           } else {
-            await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
-            await Storage.addMessageToIteration(iterationID, 'Finished Callback');
+            const response = await actor.callback(id, uniswapResponse.price);
+            if (!response.tx) {
+              await Storage.addMessageToIteration(iterationID, 'Callback Failed');
+            } else {
+              await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
+              await Storage.addMessageToIteration(iterationID, 'Finished Callback');
+            }
           }
         });
 
