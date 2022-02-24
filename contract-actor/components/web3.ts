@@ -18,7 +18,7 @@ export function initWeb3(providerURL: string): Web3 {
 
     clientConfig: {
       keepalive: true,
-      keepaliveInterval: 60000
+      keepaliveInterval: 60000,
     },
 
     // Enable auto reconnection
@@ -26,8 +26,8 @@ export function initWeb3(providerURL: string): Web3 {
       auto: true,
       delay: 10000,
       maxAttempts: 999,
-      onTimeout: false
-    }
+      onTimeout: false,
+    },
   };
 
   return (new Web3(new Web3.providers.WebsocketProvider(providerURL, options)));
