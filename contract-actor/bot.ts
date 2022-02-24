@@ -32,26 +32,29 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        */
       const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${ tknPair } @ ${ id }`);
 
           // call uniswap contract
           const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
-          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);
+          await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${ tknPair } @ ${ uniswapResponse.price }`);
 
           // check if token pair is valid and if the value is plausible
           if (uniswapResponse.price === 'NaN') {
-            throw new Error(`Switch Case Failed for Uniswap with Pair: ${tknPair}`);
+            throw new Error(`Switch Case Failed for Uniswap with Pair: ${ tknPair }`);
           } else {
             await Storage.addTransactionToIteration(iterationID, await actor.callback(id, uniswapResponse.price));
             await Storage.addMessageToIteration(iterationID, 'Finished Callback');
           }
         });
-      await Storage.addMessageToIteration(iterationID, 'Start listening to \'requestData\' Event');
 
       /*
        * call contract function that triggers the event and trade
        */
       const contractSwapCall = actor.callContractSwap().then(async (tx) => {
+        if (!tx.tx) {
+          await Storage.addMessageToIteration(iterationID, 'Contract Swap Failed');
+          return;
+        }
         await Storage.addTransactionToIteration(iterationID, tx);
         await Storage.addMessageToIteration(iterationID, 'Finished Contract Swap');
       });

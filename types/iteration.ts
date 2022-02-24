@@ -9,7 +9,7 @@ export interface Iteration extends Record<string, unknown> {
 }
 
 export interface ITransaction {
-  tx: string;
+  tx: string | undefined;
   descriptor: string;
   gasPrice: number;
   gasLimit: number;

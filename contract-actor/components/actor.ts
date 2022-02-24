@@ -58,11 +58,18 @@ export class Actor {
       throw new Error('Signed Transaction couldn\'t be created');
     }
 
+    let transactionHash: string | undefined = undefined
+    try {
+      transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash
+    } catch {
+      // keep undefined
+    }
+
     return {
-      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash,
+      tx: transactionHash,
       descriptor: 'Swap Transaction',
-      gasLimit: Number(gasAmount),
-      gasPrice: Number(gasPrice),
+      gasLimit: Number(rawTx.gasLimit),
+      gasPrice: Number(rawTx.gasPrice),
     };
   }
 
@@ -108,8 +115,15 @@ export class Actor {
       throw new Error('Signed Transaction couldn\'t be created');
     }
 
+    let transactionHash: string | undefined = undefined
+    try {
+      transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash
+    } catch {
+      // keep undefined
+    }
+
     return {
-      tx: (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash,
+      tx: transactionHash,
       descriptor: 'Price Callback',
       gasLimit: Number(rawTx.gasLimit),
       gasPrice: Number(rawTx.gasPrice),
