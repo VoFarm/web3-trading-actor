@@ -58,11 +58,11 @@ export class Actor {
       throw new Error('Signed Transaction couldn\'t be created');
     }
 
-    let transactionHash: string | undefined = undefined;
+    let transactionHash: string;
     try {
       transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash;
-    } catch {
-      // keep undefined
+    } catch (e) {
+      throw new Error(`Swap Failed: ${e}`);
     }
 
     return {

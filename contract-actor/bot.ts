@@ -56,10 +56,6 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        * call contract function that triggers the event and trade
        */
       const contractSwapCall = actor.callContractSwap().then(async (tx) => {
-        if (!tx.tx) {
-          await Storage.addMessageToIteration(iterationID, 'Contract Swap Failed');
-          return;
-        }
         await Storage.addTransactionToIteration(iterationID, tx);
         await Storage.addMessageToIteration(iterationID, 'Finished Contract Swap');
       });
