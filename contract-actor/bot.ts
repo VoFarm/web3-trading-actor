@@ -96,8 +96,8 @@ async function recordMetaData(iterationID: number, actor: Actor) {
     // get current balance of swapable tokens from the contract
     const [primary, secondary] = await Promise.all([actor.getAmountOfPrimaryToken(), actor.getAmountOfSecondaryToken()]);
     await Storage.newPrice({ primary, secondary, date: new Date() });
-  } catch {
-    await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Amount of Tokens');
+  } catch (e) {
+    await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Amount of Tokens: ${e}`);
   }
 
   try {
@@ -110,7 +110,7 @@ async function recordMetaData(iterationID: number, actor: Actor) {
     await Storage.setPrimaryName(primaryName);
     await Storage.setSecondaryName(secondaryName);
     await Storage.setContractName(contractName);
-  } catch {
-    await Storage.addMessageToIteration(iterationID, 'Can\'t Fetch Contract and Token Names');
+  } catch (e) {
+    await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Contract and Token Names: ${e}`);
   }
 }
