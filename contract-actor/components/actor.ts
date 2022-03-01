@@ -162,7 +162,7 @@ export class Actor {
    * fetch the amount of the primary token
    */
   public async getAmountOfPrimaryToken(): Promise<number> {
-    const primaryTokenAddress = await this.contract.methods.getPrimaryToken();
+    const primaryTokenAddress = await this.contract.methods.getPrimaryToken().call();
     const contract = this.generateContractForBalanceRequest(primaryTokenAddress);
 
     return await contract.methods.balanceOf(this.contract.options.address).call();
@@ -172,7 +172,7 @@ export class Actor {
    * fetch the amount of the secondary token
    */
   public async getAmountOfSecondaryToken(): Promise<number> {
-    const secondaryTokenAddress = await this.contract.methods.getSecondaryToken();
+    const secondaryTokenAddress = await this.contract.methods.getSecondaryToken().call();
     const contract = this.generateContractForBalanceRequest(secondaryTokenAddress);
 
     return await contract.methods.balanceOf(this.contract.options.address).call();
@@ -182,7 +182,7 @@ export class Actor {
    * return official name of the token
    */
   public async getPrimaryTokenName(): Promise<string> {
-    const primaryTokenAddress = await this.contract.methods.getPrimaryToken();
+    const primaryTokenAddress = await this.contract.methods.getPrimaryToken().call();
     const contract = this.generateContractForBalanceRequest(primaryTokenAddress);
 
     return await contract.methods.name().call();
@@ -192,7 +192,7 @@ export class Actor {
    * return official name of the token
    */
   public async getSecondaryTokenName(): Promise<string> {
-    const secondaryTokenAddress = await this.contract.methods.getSecondaryToken();
+    const secondaryTokenAddress = await this.contract.methods.getSecondaryToken().call();
     const contract = this.generateContractForBalanceRequest(secondaryTokenAddress);
 
     return await contract.methods.name().call();
