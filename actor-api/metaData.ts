@@ -1,5 +1,6 @@
 import { Storage } from '../contract-actor/components/storage.ts';
 import { Opine } from 'https://raw.githubusercontent.com/ntrotner/opine/main/src/types.ts';
+import { actorNet, tradingActorExplorer } from '../contract-actor/components/settings.ts';
 
 /**
  * defines endpoints for meta data that is linked to display information
@@ -26,6 +27,22 @@ export function initializeMetaDataAPI(app: Opine): Opine {
   app.get('/contractName', async (_, res) => {
     try {
       res.json(await Storage.getContractName());
+    } catch {
+      res.json(null);
+    }
+  });
+
+  app.get('/tradingActorExplorer', (_, res) => {
+    try {
+      res.json(tradingActorExplorer);
+    } catch {
+      res.json(null);
+    }
+  });
+
+  app.get('/chainID', (_, res) => {
+    try {
+      res.json(actorNet.netID);
     } catch {
       res.json(null);
     }

@@ -292,7 +292,7 @@ export class Storage {
       if (!iteration) return false;
 
       const date = new Date();
-      iteration.messages.push(`${date.toDateString()} ${date.toTimeString()} | ${message}`);
+      iteration.messages.push({ date, message });
       await this.writeObject(`${ITERATIONDESCRIPTOR}${iterationID}`, iteration);
       return true;
     } catch {
