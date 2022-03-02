@@ -153,7 +153,7 @@ export class Actor {
         })
         .on('error', (error: string, _: string) => {
           this.listeningEvent = undefined;
-          reject(error);
+          reject(`Listener Error: ${error}`);
         });
     });
   }
