@@ -62,7 +62,7 @@ export class Actor {
     try {
       transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash;
     } catch (e) {
-      throw new Error(`Swap Failed: ${e}`);
+      throw new Error(`Swap Failed: ${ e }`);
     }
 
     return {
@@ -144,16 +144,16 @@ export class Actor {
       this.contract.events['requestData']()
         .on('connected', async (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
-          await Storage.addMessageToIteration(iterationID, `Listening on ${this.listeningEvent}`);
+          await Storage.addMessageToIteration(iterationID, `Listening on ${ this.listeningEvent }`);
         })
         .on('data', async (event: EventData) => {
           this.listeningEvent = undefined;
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${event.returnValues.tknPair} @ ${event.returnValues.id}`);
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${ event.returnValues.tknPair } @ ${ event.returnValues.id }`);
           resolve({ id: event.returnValues.id, tknPair: event.returnValues.tknPair });
         })
         .on('error', (error: string, _: string) => {
           this.listeningEvent = undefined;
-          reject(`Listener Error: ${error}`);
+          reject(`Listener Error: ${ error }`);
         });
     });
   }
@@ -164,8 +164,9 @@ export class Actor {
   public async getAmountOfPrimaryToken(): Promise<number> {
     const primaryTokenAddress = await this.contract.methods.getPrimaryToken().call();
     const contract = this.generateContractForBalanceRequest(primaryTokenAddress);
+    const decimals = await contract.methods.decimals().call();
 
-    return await contract.methods.balanceOf(this.contract.options.address).call();
+    return (await contract.methods.balanceOf(this.contract.options.address).call()) * (10 ** -decimals);
   }
 
   /**
@@ -174,8 +175,9 @@ export class Actor {
   public async getAmountOfSecondaryToken(): Promise<number> {
     const secondaryTokenAddress = await this.contract.methods.getSecondaryToken().call();
     const contract = this.generateContractForBalanceRequest(secondaryTokenAddress);
+    const decimals = await contract.methods.decimals().call();
 
-    return await contract.methods.balanceOf(this.contract.options.address).call();
+    return (await contract.methods.balanceOf(this.contract.options.address).call()) * (10 ** -decimals);
   }
 
   /**
