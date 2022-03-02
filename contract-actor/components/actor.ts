@@ -62,7 +62,7 @@ export class Actor {
     try {
       transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash;
     } catch (e) {
-      throw new Error(`Swap Failed: ${ e }`);
+      throw new Error(`Swap Failed: ${e}`);
     }
 
     return {
@@ -144,16 +144,16 @@ export class Actor {
       this.contract.events['requestData']()
         .on('connected', async (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
-          await Storage.addMessageToIteration(iterationID, `Listening on ${ this.listeningEvent }`);
+          await Storage.addMessageToIteration(iterationID, `Listening on ${this.listeningEvent}`);
         })
         .on('data', async (event: EventData) => {
           this.listeningEvent = undefined;
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${ event.returnValues.tknPair } @ ${ event.returnValues.id }`);
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${event.returnValues.tknPair} @ ${event.returnValues.id}`);
           resolve({ id: event.returnValues.id, tknPair: event.returnValues.tknPair });
         })
         .on('error', (error: string, _: string) => {
           this.listeningEvent = undefined;
-          reject(`Listener Error: ${ error }`);
+          reject(`Listener Error: ${error}`);
         });
     });
   }
