@@ -30,10 +30,8 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        *
        * when event data was emitted, then it will be processed to execute the 'callback' function
        */
-      const dataRequestListener = actor.listenToDataRequest()
+      const dataRequestListener = actor.listenToDataRequest(iterationID)
         .then(async ({ id, tknPair }) => {
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
-
           // call uniswap contract
           const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
           await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);
@@ -44,7 +42,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
           } else {
             const response = await actor.callback(id, uniswapResponse.price);
             if (!response.tx) {
-              await Storage.addMessageToIteration(iterationID, 'Callback Failed');
+              await Storage.addMessageToIteration(iterationID, `Callback Failed: ${response.descriptor}`);
             } else {
               await Storage.addTransactionToIteration(iterationID, response);
               await Storage.addMessageToIteration(iterationID, 'Finished Callback');
@@ -68,19 +66,26 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
         new Promise((_, reject) => setTimeout(() => reject('Timeout'), 180 * 1000)),
       ]);
 
+      // set length of execution
       const endTime = performance.now();
       await Storage.setPerformanceIteration(iterationID, Number(((endTime - startTime) / 1000).toFixed(1)));
 
+      // reset priority if iteration was successful
       await Storage.resetPriority();
+
       await Storage.addMessageToIteration(iterationID, 'Finished Iteration');
       await Storage.setSuccessIteration(iterationID, true);
+
+      // set information if the smart contract did sell, buy or hold tokens
       await Storage.setTradedIteration(iterationID, await actor.getStatus());
     } catch (e) {
       await handleError(iterationID, e);
     }
+    // set status of iteration to inactive
     await Storage.setInProgressIteration(iterationID, false);
     await recordMetaData(iterationID, actor);
 
+    // wait defined amount of seconds before next iteration
     await new Promise((resolve) => setTimeout(resolve, loopSleepSeconds * 1000));
   }
 }
@@ -100,17 +105,25 @@ async function recordMetaData(iterationID: number, actor: Actor) {
     await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Amount of Tokens: ${e}`);
   }
 
+  // fetch names
   try {
-    // refresh names of the swapable tokens
-    const [primaryName, secondaryName, contractName] = await Promise.all([
-      actor.getPrimaryTokenName(),
-      actor.getSecondaryTokenName(),
-      actor.getContractName(),
-    ]);
+    const primaryName = await actor.getPrimaryTokenName();
     await Storage.setPrimaryName(primaryName);
+  } catch (e) {
+    await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Primary Name: ${e}`);
+  }
+
+  try {
+    const secondaryName = await actor.getSecondaryTokenName();
     await Storage.setSecondaryName(secondaryName);
+  } catch (e) {
+    await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Secondary Name: ${e}`);
+  }
+
+  try {
+    const contractName = await actor.getContractName();
     await Storage.setContractName(contractName);
   } catch (e) {
-    await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Contract and Token Names: ${e}`);
+    await Storage.addMessageToIteration(iterationID, `Can\'t Fetch Contract Name: ${e}`);
   }
 }

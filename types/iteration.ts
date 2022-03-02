@@ -1,7 +1,7 @@
 export interface Iteration extends Record<string, unknown> {
   tx: ITransaction[];
   traded: string;
-  messages: string[];
+  messages: Message[];
   startDate: Date;
   seconds: number;
   success: boolean;
@@ -13,6 +13,11 @@ export interface ITransaction {
   descriptor: string;
   gasPrice: number;
   gasLimit: number;
+}
+
+interface Message {
+  message: string;
+  date: Date;
 }
 
 export function Iteration(): Iteration {

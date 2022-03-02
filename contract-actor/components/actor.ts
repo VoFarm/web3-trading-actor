@@ -3,8 +3,8 @@ import { EventData, initWeb3, rawTransactionSend, Web3 } from './web3.ts';
 import { ITransaction } from '../../types/iteration.ts';
 import { Contract } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
 import { AbiItem } from 'https://deno.land/x/web3@v0.9.2/packages/web3-utils/types/index.d.ts';
-import { ERC20TokenAddressPrimary, ERC20TokenAddressSecondary } from './settings.ts';
 import { defaultContract } from '../abi/defaultContract.ts';
+import { Storage } from './storage.ts';
 
 export class Actor {
   web3: Web3;
@@ -118,8 +118,14 @@ export class Actor {
     let transactionHash: string | undefined = undefined;
     try {
       transactionHash = (await this.web3.eth.sendSignedTransaction(signedTransaction.rawTransaction)).transactionHash;
-    } catch {
-      // keep undefined
+    } catch (e) {
+      // soft fail
+      return {
+        tx: undefined,
+        descriptor: e,
+        gasLimit: Number(rawTx.gasLimit),
+        gasPrice: Number(rawTx.gasPrice),
+      };
     }
 
     return {
@@ -133,14 +139,16 @@ export class Actor {
   /**
    * starts listening to the specified event and resolves when an event was emitted
    */
-  public listenToDataRequest(): Promise<{ id: string; tknPair: string }> {
+  public listenToDataRequest(iterationID: number): Promise<{ id: string; tknPair: string }> {
     return new Promise((resolve, reject) => {
       this.contract.events['requestData']()
-        .on('connected', (subscriptionId: string) => {
+        .on('connected', async (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
+          await Storage.addMessageToIteration(iterationID, `Listening on ${this.listeningEvent}`);
         })
-        .on('data', (event: EventData) => {
+        .on('data', async (event: EventData) => {
           this.listeningEvent = undefined;
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${event.returnValues.tknPair} @ ${event.returnValues.id}`);
           resolve({ id: event.returnValues.id, tknPair: event.returnValues.tknPair });
         })
         .on('error', (error: string, _: string) => {
@@ -154,7 +162,8 @@ export class Actor {
    * fetch the amount of the primary token
    */
   public async getAmountOfPrimaryToken(): Promise<number> {
-    const contract = this.generateContractForBalanceRequest(ERC20TokenAddressPrimary);
+    const primaryTokenAddress = await this.contract.methods.getPrimaryToken().call();
+    const contract = this.generateContractForBalanceRequest(primaryTokenAddress);
 
     return await contract.methods.balanceOf(this.contract.options.address).call();
   }
@@ -163,7 +172,8 @@ export class Actor {
    * fetch the amount of the secondary token
    */
   public async getAmountOfSecondaryToken(): Promise<number> {
-    const contract = this.generateContractForBalanceRequest(ERC20TokenAddressSecondary);
+    const secondaryTokenAddress = await this.contract.methods.getSecondaryToken().call();
+    const contract = this.generateContractForBalanceRequest(secondaryTokenAddress);
 
     return await contract.methods.balanceOf(this.contract.options.address).call();
   }
@@ -172,7 +182,8 @@ export class Actor {
    * return official name of the token
    */
   public async getPrimaryTokenName(): Promise<string> {
-    const contract = this.generateContractForBalanceRequest(ERC20TokenAddressPrimary);
+    const primaryTokenAddress = await this.contract.methods.getPrimaryToken().call();
+    const contract = this.generateContractForBalanceRequest(primaryTokenAddress);
 
     return await contract.methods.name().call();
   }
@@ -181,7 +192,8 @@ export class Actor {
    * return official name of the token
    */
   public async getSecondaryTokenName(): Promise<string> {
-    const contract = this.generateContractForBalanceRequest(ERC20TokenAddressSecondary);
+    const secondaryTokenAddress = await this.contract.methods.getSecondaryToken().call();
+    const contract = this.generateContractForBalanceRequest(secondaryTokenAddress);
 
     return await contract.methods.name().call();
   }
