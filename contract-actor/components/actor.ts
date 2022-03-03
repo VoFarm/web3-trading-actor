@@ -143,7 +143,7 @@ export class Actor {
       this.contract.events['requestData']()
         .on('connected', (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
-          setTimeout(() => reject('Listener Timeout'), 180 * 1000)
+          setTimeout(() => reject('Listener Timeout'), 180 * 1000);
         })
         .on('data', (event: EventData) => {
           this.listeningEvent = undefined;
