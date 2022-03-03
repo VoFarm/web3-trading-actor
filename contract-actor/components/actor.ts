@@ -4,7 +4,6 @@ import { ITransaction } from '../../types/iteration.ts';
 import { Contract } from 'https://deno.land/x/web3@v0.9.2/packages/web3-eth-contract/types/index.d.ts';
 import { AbiItem } from 'https://deno.land/x/web3@v0.9.2/packages/web3-utils/types/index.d.ts';
 import { defaultContract } from '../abi/defaultContract.ts';
-import { Storage } from './storage.ts';
 
 export class Actor {
   web3: Web3;
