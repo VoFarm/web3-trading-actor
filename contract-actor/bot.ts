@@ -30,8 +30,9 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        *
        * when event data was emitted, then it will be processed to execute the 'callback' function
        */
-      const dataRequestListener = actor.listenToDataRequest(iterationID)
+      const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
+          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
           // call uniswap contract
           const uniswapResponse: UniswapPoolResponse = await pairPricer.selectTokenPair(tknPair);
           await Storage.addMessageToIteration(iterationID, `Received Token Pair: ${tknPair} @ ${uniswapResponse.price}`);

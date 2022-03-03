@@ -139,17 +139,15 @@ export class Actor {
   /**
    * starts listening to the specified event and resolves when an event was emitted
    */
-  public listenToDataRequest(iterationID: number): Promise<{ id: string; tknPair: string }> {
+  public listenToDataRequest(): Promise<{ id: string; tknPair: string }> {
     return new Promise((resolve, reject) => {
       this.contract.events['requestData']()
-        .on('connected', async (subscriptionId: string) => {
+        .on('connected', (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
-          await Storage.addMessageToIteration(iterationID, `Listening on ${this.listeningEvent}`);
           setTimeout(() => reject('Listener Timeout'), 180 * 1000)
         })
-        .on('data', async (event: EventData) => {
+        .on('data', (event: EventData) => {
           this.listeningEvent = undefined;
-          await Storage.addMessageToIteration(iterationID, `Got Event Response: ${event.returnValues.tknPair} @ ${event.returnValues.id}`);
           resolve({ id: event.returnValues.id, tknPair: event.returnValues.tknPair });
         })
         .on('error', (error: string, _: string) => {
