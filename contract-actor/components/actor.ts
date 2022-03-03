@@ -145,6 +145,7 @@ export class Actor {
         .on('connected', async (subscriptionId: string) => {
           this.listeningEvent = subscriptionId;
           await Storage.addMessageToIteration(iterationID, `Listening on ${this.listeningEvent}`);
+          setTimeout(() => reject('Listener Timeout'), 180 * 1000)
         })
         .on('data', async (event: EventData) => {
           this.listeningEvent = undefined;
