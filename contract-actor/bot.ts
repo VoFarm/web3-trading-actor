@@ -30,6 +30,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        *
        * when event data was emitted, then it will be processed to execute the 'callback' function
        */
+      /*
       const dataRequestListener = actor.listenToDataRequest()
         .then(async ({ id, tknPair }) => {
           await Storage.addMessageToIteration(iterationID, `Got Event Response: ${tknPair} @ ${id}`);
@@ -50,6 +51,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
             }
           }
         });
+      */
 
       /*
        * call contract function that triggers the event and trade
@@ -63,7 +65,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        * wait until the upper promises are done or timeout
        */
       await Promise.race([
-        Promise.all([dataRequestListener, contractSwapCall]),
+        Promise.all([dataRequestListener]), //contractSwapCall]),
         new Promise((_, reject) => setTimeout(() => reject('Timeout'), 180 * 1000)),
       ]);
 
