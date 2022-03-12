@@ -38,7 +38,8 @@ export class Actor {
     const contractGasEstimation: Promise<string> = this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({
       from: this.contractOwner.publicKey,
     });
-    const [gasPrice, gasAmount] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation]);
+    const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey);
+    const [gasPrice, gasAmount, nonce] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation, currentNonce]);
 
     // create raw transaction to execute contract function
     const rawTx = await rawTransactionSend(
@@ -48,6 +49,7 @@ export class Actor {
       this.contract.options.address,
       data,
       this.netSettings.netID,
+      nonce,
     );
 
     // sign and send transcation
@@ -95,7 +97,8 @@ export class Actor {
     const contractGasEstimation: Promise<string> = this.contract.methods.callback(id, value).estimateGas({
       from: this.contractOwner.publicKey,
     });
-    const [gasPrice, gasAmount] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation]);
+    const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey);
+    const [gasPrice, gasAmount, nonce] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation, currentNonce]);
 
     // create raw transaction to execute contract function
     const rawTx = await rawTransactionSend(
@@ -105,6 +108,7 @@ export class Actor {
       this.contract.options.address,
       data,
       this.netSettings.netID,
+      nonce,
     );
 
     // sign and send transcation
