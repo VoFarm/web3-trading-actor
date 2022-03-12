@@ -38,7 +38,7 @@ export class Actor {
     const contractGasEstimation: Promise<string> = this.contract.methods.executeCurrentInvestmentAdvices().estimateGas({
       from: this.contractOwner.publicKey,
     });
-    const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey, "pending");
+    const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey, 'pending');
     const [gasPrice, gasAmount, nonce] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation, currentNonce]);
     console.log(nonce);
 
@@ -98,7 +98,7 @@ export class Actor {
     const contractGasEstimation: Promise<string> = this.contract.methods.callback(id, value).estimateGas({
       from: this.contractOwner.publicKey,
     });
-    const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey, "pending");
+    const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey, 'pending');
     const [gasPrice, gasAmount, nonce] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation, currentNonce]);
 
     // create raw transaction to execute contract function
