@@ -43,6 +43,7 @@ export async function rawTransactionSend(
   contractAddress: string,
   contractData: string,
   chainId: number,
+  nonce: number
 ): Promise<IRawTransaction> {
   if (isNaN(Number(gasEstimation)) || isNaN(Number(gasPrice))) {
     throw new Error('Gas isn\'t a Number');
@@ -53,6 +54,7 @@ export async function rawTransactionSend(
     'gasPrice': Web3.utils.toHex(
       Number((Number(gasPrice) * Math.min(await Storage.getPriority(), maxPriority)).toFixed(0)),
     ),
+    'nonce': nonce,
     'from': contractOwner.publicKey,
     'to': contractAddress,
     'value': '0x00',
