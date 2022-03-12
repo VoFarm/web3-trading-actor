@@ -43,7 +43,7 @@ export async function rawTransactionSend(
   contractAddress: string,
   contractData: string,
   chainId: number,
-  nonce: number
+  nonce: number,
 ): Promise<IRawTransaction> {
   if (isNaN(Number(gasEstimation)) || isNaN(Number(gasPrice))) {
     throw new Error('Gas isn\'t a Number');
