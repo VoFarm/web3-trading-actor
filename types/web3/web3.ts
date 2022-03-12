@@ -16,4 +16,5 @@ export interface IRawTransaction {
   value: string;
   data: string;
   chainId: number;
+  nonce: number;
 }
