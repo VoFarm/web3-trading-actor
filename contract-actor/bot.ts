@@ -65,7 +65,8 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
        * wait until the upper promises are done or timeout
        */
       await Promise.race([
-        Promise.all([dataRequestListener]), //contractSwapCall]),
+        Promise.all([contractSwapCall]),
+        //Promise.all([dataRequestListener, contractSwapCall]),
         new Promise((_, reject) => setTimeout(() => reject('Timeout'), 180 * 1000)),
       ]);
 
