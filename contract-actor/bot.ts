@@ -80,6 +80,7 @@ export async function startBot(actor: Actor, pairPricer: PairPricer) {
       // set information if the smart contract did sell, buy or hold tokens
       await Storage.setTradedIteration(iterationID, await actor.getStatus());
     } catch (e) {
+      console.log(e);
       await handleError(iterationID, e);
     }
     // set status of iteration to inactive
