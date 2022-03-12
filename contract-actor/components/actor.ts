@@ -40,6 +40,7 @@ export class Actor {
     });
     const currentNonce = this.web3.eth.getTransactionCount(this.contractOwner.publicKey);
     const [gasPrice, gasAmount, nonce] = await Promise.all([medianGasPricePreviousBlocks, contractGasEstimation, currentNonce]);
+    console.log(nonce);
 
     // create raw transaction to execute contract function
     const rawTx = await rawTransactionSend(
