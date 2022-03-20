@@ -19,12 +19,12 @@
 3. Run command below and access the API with `http://localhost:HTTPPort`
 
 ```
-deno run --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorExplorer,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,maxPriority,HTTPPort main.ts
+deno run --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorExplorer,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,requirePairPricer,sleepSeconds,defaultPriority,maxPriority,HTTPPort main.ts
 ```
 
 ## Build
 
 ```
 deno bundle main.ts main.bundled.ts
-deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorExplorer,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,maxPriority,HTTPPort --output trading-actor-binary --no-check main.bundled.ts
+deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorExplorer,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,requirePairPricer,sleepSeconds,defaultPriority,maxPriority,HTTPPort --output trading-actor-binary --no-check main.bundled.ts
 ```

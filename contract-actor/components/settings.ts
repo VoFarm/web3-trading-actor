@@ -14,6 +14,8 @@ export const pairPricerNet: INet = {
   netID: Number(Deno.env.get('pairPricerNetID') ?? 1),
 };
 
+export const requirePairPricer = Boolean(Deno.env.get('requirePairPricer') ?? 'false');
+
 export const loopSleepSeconds = Number(Deno.env.get('sleepSeconds') ?? 120);
 
 export const defaultPriority = Number(Deno.env.get('defaultPriority') ?? 1);
