@@ -21,7 +21,7 @@ jobs:
         run: deno bundle main.ts main.bundled.ts 
 
       - name: Compile main.bundled.ts
-        run: deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorExplorer,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,sleepSeconds,defaultPriority,maxPriority,HTTPPort --output trading-actor-binary --no-check main.bundled.ts
+        run: deno compile --allow-net --allow-read --allow-write --allow-env=publicAddress,privateKey,tradingActorUrl,tradingActorNetID,tradingActorExplorer,tradingActorContractAddress,pairPricerUrl,pairPricerNetID,requirePairPricer,sleepSeconds,defaultPriority,maxPriority,HTTPPort --output trading-actor-binary --no-check main.bundled.ts
 
       - name: Zip Resources to One File
         run: zip -r trading-actor.zip trading-actor-binary .env.example
